@@ -1,0 +1,2540 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kawai K5000W · Patch Database</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+:root {
+  --bg:#080809;--bg2:#0c0c0e;--surface:#101013;--surface2:#161619;--surface3:#1c1c20;
+  --border:#1f1f24;--border2:#303040;--border3:#42424e;
+  --acc:#5a8fc4;--acc-d:#3a6fa4;--acc-l:#8ab8e0;--acc-o:#4e9e8a;
+  --text:#d8d8e8;--text2:#a0a0bc;--text3:#686880;--text-hi:#f2f2fc;
+  --lcd:#7ab87a;--lcd-bg:#0a120a;--red:#a05050;--h:44px;--sb:240px;
+  --k5:#5a8fc4;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html{font-size:14px;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);height:100dvh;overflow:hidden;}
+button{font-family:inherit;cursor:pointer;}
+input,select,textarea{font-family:inherit;}
+
+/* ── HEADER ── */
+header{position:fixed;top:0;left:0;right:0;height:var(--h);z-index:300;
+  background:var(--surface);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;padding:0 10px;gap:8px;}
+.logo-btn{height:36px;padding:0 6px;display:flex;align-items:center;
+  border-radius:4px;border:1px solid transparent;background:transparent;flex-shrink:0;}
+.logo-btn:active{background:var(--surface3);border-color:var(--border2);}
+.h-app-title{display:flex;flex-direction:column;justify-content:center;flex-shrink:0;line-height:1.25;}
+.h-app-title span{font-family:'Space Mono',monospace;font-weight:700;text-transform:uppercase;
+  color:var(--text2);letter-spacing:1px;display:block;}
+.h-app-title .t1{font-size:8px;color:var(--text-hi);}
+.h-app-title .t2{font-size:8px;color:var(--text-hi);}
+.h-app-title .t3{font-size:6px;color:var(--text3);letter-spacing:1.5px;margin-top:1px;}
+.h-title{flex:1;min-width:0;}
+.lcd{display:flex;align-items:center;gap:4px;background:var(--lcd-bg);border:1px solid #1a2a1a;
+  border-radius:2px;padding:2px 8px;font-family:'Space Mono',monospace;font-size:8px;
+  color:var(--lcd);white-space:nowrap;flex-shrink:0;}
+.lcd-dot{width:4px;height:4px;border-radius:50%;background:var(--lcd);animation:blink 2.4s ease-in-out infinite;}
+.lcd-pct{font-size:7px;opacity:.7;margin-left:2px;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+.search-wrap{position:relative;flex-shrink:0;}
+.search-input{width:28px;height:28px;background:transparent;border:1px solid transparent;
+  border-radius:3px;color:var(--text);padding:4px 6px 4px 24px;
+  font-family:'Space Mono',monospace;font-size:10px;outline:none;transition:width .22s,background .15s,border-color .15s;}
+.search-input::placeholder{color:transparent;}
+.search-input:focus{width:140px;background:var(--bg2);border-color:var(--border2);}
+.search-input:focus::placeholder{color:var(--text3);}
+.search-ico{position:absolute;left:6px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:14px;pointer-events:none;}
+.help-btn,.view-btn,.gear-btn{width:28px;height:28px;display:flex;align-items:center;justify-content:center;
+  border:1px solid var(--border2);border-radius:3px;background:transparent;color:var(--text2);font-size:14px;flex-shrink:0;}
+.view-btn.compact-on{background:rgba(90,143,196,.12);border-color:var(--acc-d);color:var(--acc-l);}
+
+/* ── FILTER STRIP ── */
+.fstrip{position:fixed;top:var(--h);left:0;right:0;background:var(--bg2);
+  border-bottom:1px solid var(--border);z-index:200;transition:left .15s;}
+.frow{display:flex;align-items:center;min-height:32px;border-bottom:1px solid var(--border);}
+.frow:last-child{border-bottom:none;}
+.flabel{width:78px;flex-shrink:0;padding-left:8px;border-right:1px solid var(--border);align-self:stretch;
+  display:flex;align-items:center;font-family:'Space Mono',monospace;font-size:6.5px;
+  font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.8px;}
+.fscroll{display:flex;gap:4px;align-items:center;overflow-x:auto;padding:5px 8px;flex:1;
+  -webkit-overflow-scrolling:touch;scrollbar-width:none;}
+.fscroll::-webkit-scrollbar{display:none;}
+.chip{font-family:'Space Mono',monospace;font-size:9px;padding:3px 8px;border-radius:3px;
+  border:1px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer;
+  white-space:nowrap;flex-shrink:0;transition:all .12s;}
+.chip.on{background:var(--surface3);border-color:var(--acc);color:var(--acc-l);box-shadow:0 0 6px rgba(90,143,196,.15);}
+
+/* ── ACTIVE TAG BAR ── */
+.atag-bar{position:fixed;left:0;right:0;display:none;align-items:center;gap:6px;padding:4px 10px;
+  background:var(--bg2);border-bottom:1px solid var(--border);z-index:190;
+  overflow-x:auto;scrollbar-width:none;}
+.atag-bar.on{display:flex;}
+.atag-bar::-webkit-scrollbar{display:none;}
+.atag{display:flex;align-items:center;gap:5px;padding:2px 8px;border-radius:3px;
+  border:1px solid var(--border2);background:rgba(90,143,196,.08);
+  font-family:'Space Mono',monospace;font-size:8px;color:var(--acc-l);white-space:nowrap;flex-shrink:0;}
+.atag-x{cursor:pointer;opacity:.6;font-size:10px;}
+.atag-x:hover{opacity:1;}
+
+/* ── TOOLS BAR ── */
+.tools-bar{display:flex;align-items:center;gap:4px;padding:4px 8px;
+  background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0;
+  overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+.tools-bar::-webkit-scrollbar{display:none;}
+.tool-btn{height:24px;padding:0 9px;display:flex;align-items:center;gap:4px;
+  font-family:'Space Mono',monospace;font-size:8px;font-weight:700;
+  border:1px solid var(--border2);border-radius:3px;background:transparent;
+  color:var(--text2);white-space:nowrap;cursor:pointer;transition:all .1s;}
+.tool-btn:active,.tool-btn.on{background:rgba(90,143,196,.1);border-color:var(--acc-d);color:var(--acc-l);}
+.tool-sep{width:1px;height:14px;background:var(--border2);flex-shrink:0;margin:0 2px;}
+.tool-spacer{flex:1;}
+
+/* ── OVERLAY ── */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:400;opacity:0;pointer-events:none;transition:opacity .2s;}
+.overlay.on{opacity:1;pointer-events:all;}
+
+/* ── DRAWER ── */
+.drawer{position:fixed;top:0;left:0;bottom:0;width:290px;background:var(--surface);
+  border-right:1px solid var(--border2);z-index:500;transform:translateX(-100%);
+  transition:transform .24s cubic-bezier(.3,0,.1,1);display:flex;flex-direction:column;}
+.drawer.on{transform:translateX(0);}
+.d-head{background:var(--bg2);border-bottom:1px solid var(--border2);padding:12px 12px 8px;flex-shrink:0;}
+.d-head-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
+.d-title{font-family:'Space Mono',monospace;font-size:9px;font-weight:700;color:var(--text2);
+  text-transform:uppercase;letter-spacing:2px;display:flex;align-items:center;gap:8px;}
+.d-close{width:24px;height:24px;display:flex;align-items:center;justify-content:center;
+  color:var(--text3);font-size:14px;cursor:pointer;border-radius:3px;border:1px solid transparent;background:transparent;}
+.d-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+.d-body::-webkit-scrollbar{width:2px;}
+.d-body::-webkit-scrollbar-thumb{background:var(--border2);}
+.ds{border-bottom:1px solid var(--border);}
+.ds-head{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;cursor:pointer;}
+.ds-head:active{background:var(--surface2);}
+.ds-name{font-size:13px;font-weight:600;color:var(--text);display:flex;align-items:center;gap:8px;}
+.ds-icon{width:20px;height:20px;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;
+  background:rgba(90,143,196,.1);border:1px solid rgba(90,143,196,.2);}
+.ds-count{font-family:'Space Mono',monospace;font-size:8px;color:var(--text3);}
+.chev{font-size:8px;color:var(--text3);transition:transform .16s;flex-shrink:0;}
+.ds.on .chev{transform:rotate(90deg);}
+.ds-body{display:none;}
+.ds.on .ds-body{display:block;}
+.dleaf{padding:7px 12px 7px 32px;font-size:12px;color:var(--text2);cursor:pointer;
+  display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--border);}
+.dleaf:active,.dleaf.on{background:rgba(90,143,196,.07);color:var(--acc-l);}
+.dleaf-dot{width:4px;height:4px;border-radius:50%;background:var(--border3);flex-shrink:0;margin-right:6px;}
+.dleaf.on .dleaf-dot{background:var(--acc);}
+.dleaf-name{flex:1;display:flex;align-items:center;}
+.dleaf-count{font-family:'Space Mono',monospace;font-size:8px;color:var(--text3);}
+
+/* ── SIDEBAR FIXED (desktop) ── */
+.sidebar{position:fixed;top:var(--h);left:0;bottom:0;width:var(--sb);
+  background:var(--surface);border-right:1px solid var(--border);
+  overflow-y:auto;display:none;flex-direction:column;z-index:100;}
+.sidebar::-webkit-scrollbar{width:2px;}
+.sidebar::-webkit-scrollbar-thumb{background:var(--border2);}
+.sb-sec{border-bottom:1px solid var(--border);}
+.sb-label{font-family:'Space Mono',monospace;font-size:7px;font-weight:700;
+  color:var(--text3);text-transform:uppercase;letter-spacing:2px;padding:10px 12px 4px;}
+.sb-item{padding:7px 12px;font-size:12px;color:var(--text2);cursor:pointer;
+  display:flex;align-items:center;justify-content:space-between;}
+.sb-item:active,.sb-item.on{background:rgba(90,143,196,.08);color:var(--acc-l);}
+.sb-item-ct{font-family:'Space Mono',monospace;font-size:8px;color:var(--text3);}
+
+/* ── MAIN CONTENT ── */
+.main{position:fixed;top:var(--h);left:0;right:0;bottom:0;display:flex;flex-direction:column;overflow:hidden;}
+.list-wrap{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:20px;}
+.list-wrap::-webkit-scrollbar{width:3px;}
+.list-wrap::-webkit-scrollbar-thumb{background:var(--border2);}
+
+/* ── SOUND ITEM ── */
+.sound-item{padding:11px 14px 11px 16px;border-bottom:1px solid var(--border);
+  background:var(--surface);transition:background .1s;cursor:pointer;position:relative;}
+.sound-item:active{background:var(--surface2);}
+.sound-item.open{background:var(--surface2);}
+.si-top{display:flex;align-items:flex-start;gap:8px;}
+.si-left{flex:1;min-width:0;}
+.si-synth{font-family:'Space Mono',monospace;font-size:7px;color:var(--k5);
+  text-transform:uppercase;letter-spacing:1px;margin-bottom:3px;display:flex;align-items:center;gap:5px;}
+.si-badge{display:inline-block;padding:1px 5px;border-radius:2px;
+  background:rgba(90,143,196,.1);border:1px solid rgba(90,143,196,.2);font-size:6.5px;color:var(--k5);}
+.si-name{font-size:14px;font-weight:600;color:var(--text-hi);margin-bottom:4px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.si-meta{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+.si-block{font-family:'Space Mono',monospace;font-size:9px;color:var(--text3);}
+.si-bank{font-family:'Space Mono',monospace;font-size:8px;color:var(--text3);padding:1px 5px;
+  border:1px solid var(--border2);border-radius:2px;}
+.si-fn{font-family:'Space Mono',monospace;font-size:8px;color:var(--acc-l);padding:1px 5px;
+  border:1px solid var(--acc-d);border-radius:2px;background:rgba(90,143,196,.06);}
+.si-cls{font-size:11px;color:var(--text3);}
+.si-right{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0;}
+.si-fav{font-size:14px;cursor:pointer;color:var(--text3);padding:2px;border-radius:2px;
+  border:none;background:transparent;transition:color .1s;}
+.si-fav.on{color:#c8b860;}
+.si-expand{font-family:'Space Mono',monospace;font-size:8px;color:var(--text3);
+  padding:2px 6px;border:1px solid var(--border2);border-radius:2px;background:transparent;cursor:pointer;}
+.si-details{display:none;padding-top:10px;border-top:1px solid var(--border);margin-top:8px;}
+.sound-item.open .si-details{display:block;}
+.si-detail-row{display:flex;gap:6px;margin-bottom:5px;align-items:flex-start;}
+.si-dk{font-family:'Space Mono',monospace;font-size:8px;color:var(--text3);
+  text-transform:uppercase;letter-spacing:.5px;min-width:55px;flex-shrink:0;padding-top:1px;}
+.si-dv{font-size:12px;color:var(--text2);flex:1;}
+.si-notes-text{font-size:11px;color:var(--text3);font-style:italic;}
+.si-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px;}
+.si-tag{font-family:'Space Mono',monospace;font-size:8px;padding:2px 6px;border-radius:2px;
+  border:1px solid rgba(78,158,138,.3);background:rgba(78,158,138,.06);color:var(--acc-o);cursor:pointer;}
+.si-actions{display:flex;gap:5px;margin-top:8px;flex-wrap:wrap;}
+.si-btn{font-family:'Space Mono',monospace;font-size:8px;font-weight:700;padding:4px 9px;
+  border-radius:3px;border:1px solid var(--border2);background:transparent;
+  color:var(--text2);cursor:pointer;transition:all .1s;}
+.si-btn:active{background:var(--surface3);}
+.si-btn.acc{border-color:var(--acc-d);color:var(--acc-l);background:rgba(90,143,196,.08);}
+.quick-note-wrap{margin-top:6px;display:none;}
+.sound-item.note-open .quick-note-wrap{display:block;}
+.quick-note-input{width:100%;background:var(--bg2);border:1px solid var(--border2);
+  border-radius:3px;color:var(--text);padding:6px 8px;font-size:12px;outline:none;resize:none;}
+.quick-note-input:focus{border-color:var(--acc);}
+.quick-note-save{font-family:'Space Mono',monospace;font-size:8px;padding:4px 10px;
+  border-radius:3px;border:1px solid var(--acc-d);background:rgba(90,143,196,.1);
+  color:var(--acc-l);cursor:pointer;margin-top:4px;}
+.sound-item.empty-patch{opacity:.38;}
+.sound-item.empty-patch .si-name{font-style:italic;}
+
+/* compact */
+body.compact .sound-item{padding:6px 12px 6px 15px;}
+body.compact .si-synth{display:none;}
+body.compact .si-name{font-size:12px;margin-bottom:2px;}
+body.compact .si-meta{gap:4px;}
+body.compact .si-expand{display:none;}
+body.compact .sound-item.open .si-expand{display:inline-flex;}
+
+/* empty state */
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:60px 20px;text-align:center;}
+.empty-ico{font-size:36px;opacity:.3;margin-bottom:12px;}
+.empty-title{font-family:'Space Mono',monospace;font-size:11px;color:var(--text3);
+  text-transform:uppercase;letter-spacing:1.5px;margin-bottom:6px;}
+.empty-sub{font-size:12px;color:var(--text3);}
+
+/* ── FAV BAR ── */
+.fav-bar{position:fixed;left:0;right:0;display:none;align-items:center;gap:6px;padding:5px 10px;
+  background:var(--bg2);border-bottom:1px solid var(--border);z-index:190;
+  overflow-x:auto;scrollbar-width:none;}
+.fav-bar.visible{display:flex;}
+.fav-bar::-webkit-scrollbar{display:none;}
+.fav-chip{font-family:'Space Mono',monospace;font-size:9px;padding:3px 9px;border-radius:3px;
+  white-space:nowrap;border:1px solid var(--border2);background:transparent;
+  color:var(--text2);cursor:pointer;flex-shrink:0;transition:all .12s;}
+.fav-chip.on{background:rgba(160,144,80,.12);border-color:rgba(160,144,80,.4);color:#c8b860;}
+.fav-chip.tag-chip.on{background:rgba(78,158,138,.12);border-color:rgba(78,158,138,.35);color:var(--acc-o);}
+.fav-chip.reset-chip{color:var(--text3);}
+.fav-sep{width:1px;height:14px;background:var(--border2);flex-shrink:0;}
+
+/* ── SETTINGS ── */
+.settings{position:fixed;top:0;right:0;bottom:0;width:min(340px,100vw);
+  background:var(--surface);border-left:1px solid var(--border2);
+  z-index:500;transform:translateX(100%);transition:transform .24s cubic-bezier(.3,0,.1,1);
+  display:flex;flex-direction:column;}
+.settings.on{transform:translateX(0);}
+.s-head{background:var(--bg2);border-bottom:1px solid var(--border2);padding:12px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:space-between;}
+.s-title{font-family:'Space Mono',monospace;font-size:9px;font-weight:700;color:var(--text2);
+  text-transform:uppercase;letter-spacing:2px;display:flex;align-items:center;gap:6px;}
+.s-tabs{display:flex;background:var(--bg2);border-bottom:1px solid var(--border2);overflow-x:auto;scrollbar-width:none;}
+.s-tabs::-webkit-scrollbar{display:none;}
+.s-tab{flex-shrink:0;padding:8px 10px;font-family:'Space Mono',monospace;font-size:7px;font-weight:700;
+  color:var(--text2);text-align:center;text-transform:uppercase;letter-spacing:.5px;cursor:pointer;
+  border-bottom:2px solid transparent;white-space:nowrap;}
+.s-tab.on{color:var(--acc-l);border-bottom-color:var(--acc);}
+.s-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+.s-body::-webkit-scrollbar{width:2px;}
+.s-body::-webkit-scrollbar-thumb{background:var(--border2);}
+.spanel{display:none;padding:14px;}
+.spanel.on{display:block;}
+.sl{font-family:'Space Mono',monospace;font-size:8px;font-weight:700;color:var(--text2);
+  text-transform:uppercase;letter-spacing:1.5px;margin-bottom:7px;display:block;}
+.ssec{margin-bottom:18px;}
+.sinput{width:100%;background:var(--bg2);border:1px solid var(--border2);border-radius:3px;
+  color:var(--text);padding:7px 9px;font-size:13px;outline:none;margin-bottom:5px;}
+.sinput:focus{border-color:var(--acc-d);}
+.sselect{width:100%;background:var(--bg2);border:1px solid var(--border2);border-radius:3px;
+  color:var(--text);padding:7px 9px;font-size:13px;outline:none;margin-bottom:5px;appearance:none;}
+.stextarea{width:100%;min-height:60px;resize:vertical;background:var(--bg2);
+  border:1px solid var(--border2);border-radius:3px;color:var(--text);padding:7px 9px;font-size:13px;outline:none;}
+.sbtn{font-family:'Space Mono',monospace;font-size:9px;font-weight:700;padding:7px 12px;
+  border-radius:3px;border:1px solid var(--border3);background:var(--surface3);color:var(--text);
+  letter-spacing:.5px;text-transform:uppercase;}
+.sbtn:active{border-color:var(--acc-d);color:var(--acc-l);}
+.sbtn.p{background:rgba(90,143,196,.12);border-color:var(--acc-d);color:var(--acc-l);}
+.sbtn.d{border-color:var(--red);color:#c07070;}
+.sbtn-row{display:flex;gap:6px;flex-wrap:wrap;}
+.sdiv{height:1px;background:var(--border);margin:14px 0;}
+.srow{display:flex;align-items:center;justify-content:space-between;padding:6px 0;}
+.srow-label{font-size:13px;color:var(--text2);}
+.toggle{position:relative;width:36px;height:20px;flex-shrink:0;}
+.toggle input{opacity:0;position:absolute;width:0;height:0;}
+.ttrack{position:absolute;inset:0;background:var(--surface3);border-radius:10px;border:1px solid var(--border2);cursor:pointer;transition:all .18s;}
+.toggle input:checked + .ttrack{background:rgba(90,143,196,.2);border-color:var(--acc-d);}
+.tthumb{position:absolute;top:2px;left:2px;width:14px;height:14px;background:var(--text3);border-radius:50%;transition:all .18s;pointer-events:none;}
+.toggle input:checked ~ .tthumb{left:18px;background:var(--acc);}
+.slist{display:flex;flex-direction:column;gap:2px;margin-bottom:8px;}
+.sitem{display:flex;align-items:center;gap:7px;padding:7px 9px;background:var(--surface2);
+  border:1px solid var(--border);border-radius:3px;font-size:12px;color:var(--text2);}
+.sitem-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.ibtn{width:22px;height:22px;display:flex;align-items:center;justify-content:center;
+  font-size:11px;color:var(--text3);cursor:pointer;border-radius:2px;border:1px solid transparent;background:transparent;}
+.ibtn:active{background:var(--surface3);border-color:var(--border2);}
+.ibtn.d:active{color:#c07070;border-color:var(--red);}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:5px;}
+.color-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-bottom:6px;}
+.cswatch{height:28px;border-radius:3px;cursor:pointer;border:2px solid transparent;position:relative;}
+.cswatch.on::after{content:'✓';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:11px;color:rgba(255,255,255,.9);}
+input[type=range]{-webkit-appearance:none;appearance:none;height:4px;border-radius:2px;background:var(--border2);outline:none;width:100%;}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--text-hi);border:2px solid var(--border2);cursor:pointer;}
+
+/* ── EDIT MODAL ── */
+.modal{position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.75);display:none;align-items:flex-end;justify-content:center;}
+.modal.on{display:flex;}
+.modal-box{width:100%;max-width:540px;max-height:92dvh;background:var(--surface);
+  border-radius:12px 12px 0 0;display:flex;flex-direction:column;overflow:hidden;}
+@media(min-width:600px){.modal-box{border-radius:8px;max-height:85dvh;}}
+.modal-head{background:var(--bg2);border-bottom:1px solid var(--border2);
+  padding:12px 14px;flex-shrink:0;display:flex;align-items:center;justify-content:space-between;}
+.modal-title{font-family:'Space Mono',monospace;font-size:9px;font-weight:700;
+  color:var(--text2);text-transform:uppercase;letter-spacing:2px;}
+.modal-body{flex:1;overflow-y:auto;padding:14px;}
+.modal-body::-webkit-scrollbar{width:3px;}
+.modal-body::-webkit-scrollbar-thumb{background:var(--border2);}
+.modal-footer{border-top:1px solid var(--border2);padding:10px 14px;display:flex;gap:8px;flex-shrink:0;background:var(--bg2);}
+.m-meta{font-family:'Space Mono',monospace;font-size:8px;color:var(--text3);margin-bottom:12px;}
+.m-label{font-family:'Space Mono',monospace;font-size:8px;font-weight:700;color:var(--text3);
+  text-transform:uppercase;letter-spacing:1px;margin-bottom:5px;margin-top:10px;}
+.chip-group{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px;}
+.echip{font-family:'Space Mono',monospace;font-size:9px;padding:3px 8px;border-radius:3px;
+  border:1px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer;}
+.echip.on{background:rgba(90,143,196,.12);border-color:var(--acc-d);color:var(--acc-l);}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(80px);
+  background:var(--surface3);border:1px solid var(--border2);border-radius:5px;
+  padding:8px 16px;font-family:'Space Mono',monospace;font-size:9px;color:var(--text);
+  white-space:nowrap;z-index:900;transition:transform .22s,opacity .22s;opacity:0;}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
+
+/* ── MIDI PANEL ── */
+.midi-status{display:flex;align-items:center;gap:8px;padding:10px 12px;
+  background:var(--bg2);border:1px solid var(--border);border-radius:5px;margin-bottom:14px;}
+.midi-led{width:8px;height:8px;border-radius:50%;background:var(--border2);flex-shrink:0;transition:background .2s;}
+.midi-led.on{background:#4e9;box-shadow:0 0 6px rgba(68,238,153,.5);}
+.midi-led.busy{background:#fa0;box-shadow:0 0 6px rgba(255,170,0,.5);animation:blink .5s ease-in-out infinite;}
+.midi-led.err{background:var(--red);}
+.midi-status-txt{font-family:'Space Mono',monospace;font-size:9px;color:var(--text2);flex:1;}
+.midi-port-sel{width:100%;background:var(--bg2);border:1px solid var(--border2);border-radius:3px;
+  color:var(--text);padding:7px 9px;font-size:12px;outline:none;margin-bottom:5px;appearance:none;}
+.midi-progress{height:3px;background:var(--border2);border-radius:2px;overflow:hidden;margin:6px 0;}
+.midi-progress-bar{height:100%;background:var(--acc);border-radius:2px;width:0%;transition:width .2s;}
+.midi-log{background:var(--bg2);border:1px solid var(--border);border-radius:3px;
+  padding:8px 10px;font-family:'Space Mono',monospace;font-size:8px;color:var(--text3);
+  max-height:80px;overflow-y:auto;margin-top:6px;line-height:1.8;}
+.midi-log::-webkit-scrollbar{width:2px;}
+.midi-log::-webkit-scrollbar-thumb{background:var(--border2);}
+
+/* ── DESKTOP ── */
+@media(min-width:900px){
+  .sidebar{display:flex;}
+  .fstrip,.main,.atag-bar,.fav-bar{left:var(--sb);}
+  .logo-btn,.h-app-title{display:none;}
+}
+@media(min-width:600px){
+  .search-input:focus{width:220px;}
+  .sound-item{padding:12px 18px 12px 20px;}
+  .h-app-title .t1,.h-app-title .t2{font-size:14px;letter-spacing:2px;}
+  .h-app-title .t3{font-size:9px;}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ OVERLAY ═══ -->
+<div class="overlay" id="overlay" onclick="closeAll()"></div>
+
+<!-- ═══ HEADER ═══ -->
+<header>
+  <button class="logo-btn" onclick="openDrawer()" title="Browse">
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+      <rect x="2" y="3" width="14" height="1.2" rx=".6" fill="var(--acc-l)"/>
+      <rect x="2" y="8.4" width="10" height="1.2" rx=".6" fill="var(--acc)"/>
+      <rect x="2" y="13.8" width="12" height="1.2" rx=".6" fill="var(--acc-d)"/>
+    </svg>
+  </button>
+  <div class="h-app-title">
+    <span class="t1">Kawai K5000W</span>
+    <span class="t2">Patch Database</span>
+    <span class="t3">v1.0</span>
+  </div>
+  <div class="h-title"></div>
+  <div class="lcd"><div class="lcd-dot"></div><span id="lcdTxt">0 PATCHES</span><span class="lcd-pct" id="lcdPct"></span></div>
+  <div class="search-wrap">
+    <span class="search-ico">🔍</span>
+    <input class="search-input" id="searchInput" type="search" placeholder="search patch…" oninput="onSearch(this.value)">
+  </div>
+  <button class="view-btn" id="viewBtn" onclick="toggleCompact()" title="Compact view">≡</button>
+  <button class="gear-btn" onclick="openSettings()" title="Settings">⚙</button>
+</header>
+
+<!-- ═══ FILTER STRIP ═══ -->
+<div class="fstrip" id="fstrip">
+  <div class="frow">
+    <div class="flabel">Function</div>
+    <div class="fscroll" id="fscroll-fn">
+      <span class="chip on" data-g="fn" data-v="ALL" onclick="fchip(this)">All</span>
+      <span class="chip" data-g="fn" data-v="Lead" onclick="fchip(this)">Lead</span>
+      <span class="chip" data-g="fn" data-v="Pad" onclick="fchip(this)">Pad</span>
+      <span class="chip" data-g="fn" data-v="Bass" onclick="fchip(this)">Bass</span>
+      <span class="chip" data-g="fn" data-v="Bell" onclick="fchip(this)">Bell</span>
+      <span class="chip" data-g="fn" data-v="Pluck" onclick="fchip(this)">Pluck</span>
+      <span class="chip" data-g="fn" data-v="Strings" onclick="fchip(this)">Strings</span>
+      <span class="chip" data-g="fn" data-v="Brass" onclick="fchip(this)">Brass</span>
+      <span class="chip" data-g="fn" data-v="Choir" onclick="fchip(this)">Choir</span>
+      <span class="chip" data-g="fn" data-v="Piano" onclick="fchip(this)">Piano</span>
+      <span class="chip" data-g="fn" data-v="Perc" onclick="fchip(this)">Perc</span>
+      <span class="chip" data-g="fn" data-v="Guitar" onclick="fchip(this)">Guitar</span>
+      <span class="chip" data-g="fn" data-v="FX" onclick="fchip(this)">FX</span>
+      <span class="chip" data-g="fn" data-v="Drums" onclick="fchip(this)">Drums</span>
+      <span class="chip" data-g="fn" data-v="Multi" onclick="fchip(this)">Multi</span>
+    </div>
+  </div>
+  <div class="frow">
+    <div class="flabel">Bank</div>
+    <div class="fscroll" id="fscroll-bk">
+      <span class="chip on" data-g="bk" data-v="ALL" onclick="fchip(this)">All</span>
+      <span class="chip" data-g="bk" data-v="Additive Bank" onclick="fchip(this)">Additive A</span>
+      <span class="chip" data-g="bk" data-v="PCM Bank" onclick="fchip(this)">PCM B</span>
+      <span class="chip" data-g="bk" data-v="GM Bank C (1-64)" onclick="fchip(this)">GM C</span>
+      <span class="chip" data-g="bk" data-v="GM Bank D (65-128)" onclick="fchip(this)">GM D</span>
+      <span class="chip" data-g="bk" data-v="ME-1 Bank E" onclick="fchip(this)">ME-1 E</span>
+      <span class="chip" data-g="bk" data-v="ME-1 Bank F" onclick="fchip(this)">ME-1 F</span>
+      <span class="chip" data-g="bk" data-v="Drum Kits" onclick="fchip(this)">Drum Kits</span>
+      <span class="chip" data-g="bk" data-v="Multi Bank A" onclick="fchip(this)">Multi MA</span>
+      <span class="chip" data-g="bk" data-v="Multi Bank B" onclick="fchip(this)">Multi MB</span>
+      <span class="chip" data-g="bk" data-v="Multi Bank E" onclick="fchip(this)">Multi ME</span>
+      <span class="chip" data-g="bk" data-v="Multi Bank F" onclick="fchip(this)">Multi MF</span>
+    </div>
+  </div>
+  <div class="frow">
+    <div class="flabel">Class</div>
+    <div class="fscroll" id="fscroll-cl">
+      <span class="chip on" data-g="cl" data-v="ALL" onclick="fchip(this)">All</span>
+      <span class="chip" data-g="cl" data-v="Additive" onclick="fchip(this)">Additive</span>
+      <span class="chip" data-g="cl" data-v="PCM" onclick="fchip(this)">PCM</span>
+      <span class="chip" data-g="cl" data-v="GM" onclick="fchip(this)">GM</span>
+      <span class="chip" data-g="cl" data-v="ME1" onclick="fchip(this)">ME-1</span>
+      <span class="chip" data-g="cl" data-v="Drum" onclick="fchip(this)">Drum Kit</span>
+      <span class="chip" data-g="cl" data-v="Multi" onclick="fchip(this)">Multi</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ ACTIVE TAG BAR ═══ -->
+<div class="atag-bar" id="atagBar"></div>
+
+<!-- ═══ FAV BAR ═══ -->
+<div class="fav-bar" id="favBar">
+  <span class="fav-chip" id="fc-fav" onclick="toggleFavFilter()">★ Favourites</span>
+  <span class="fav-sep"></span>
+  <span id="tagChips"></span>
+  <span class="fav-chip reset-chip" onclick="resetAllFilters()">↺ Reset</span>
+</div>
+
+<!-- ═══ DRAWER ═══ -->
+<div class="drawer" id="drawer">
+  <div class="d-head">
+    <div class="d-head-row">
+      <div class="d-title">🎹 Kawai K5000W</div>
+      <div class="d-close" onclick="closeDrawer()">✕</div>
+    </div>
+  </div>
+  <div class="d-body" id="drawerBody"></div>
+</div>
+
+<!-- ═══ SIDEBAR (desktop) ═══ -->
+<div class="sidebar" id="sidebar">
+  <div class="sb-sec">
+    <div class="sb-label">Browse</div>
+    <div class="sb-item on" onclick="sbAll(this)">All patches <span class="sb-item-ct" id="sb-all-ct">907</span></div>
+    <div class="sb-item" id="sb-fav-item" onclick="sbFav(this)">★ Favourites <span class="sb-item-ct" id="sb-fav-ct">0</span></div>
+  </div>
+  <div class="sb-sec">
+    <div class="sb-label">Banks</div>
+    <div id="sbBankList"></div>
+  </div>
+</div>
+
+<!-- ═══ MAIN ═══ -->
+<div class="main" id="mainWrap">
+  <div class="tools-bar">
+    <button class="tool-btn" onclick="randomPatch()">⚂ Random</button>
+    <button class="tool-btn" id="statsBtn" onclick="openStats()">◈ Stats</button>
+    <div class="tool-spacer"></div>
+    <button class="tool-btn" id="fc-fav-tool" onclick="toggleFavFilter()">☆ Favs</button>
+  </div>
+  <div class="list-wrap" id="listWrap">
+    <div id="soundList"></div>
+    <div id="loadMore" style="text-align:center;padding:14px;display:none;">
+      <button class="sbtn" onclick="loadMore()">▾ Load more</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SETTINGS ═══ -->
+<div class="settings" id="settings">
+  <div class="s-head">
+    <div class="s-title">⚙ Settings</div>
+    <div class="d-close" onclick="closeSettings()">✕</div>
+  </div>
+  <div class="s-tabs">
+    <div class="s-tab on" onclick="sTab(this,'tp-look')">Appearance</div>
+    <div class="s-tab" onclick="sTab(this,'tp-sounds')">Patches</div>
+    <div class="s-tab" onclick="sTab(this,'tp-import')">Import</div>
+    <div class="s-tab" onclick="sTab(this,'tp-midi')">MIDI</div>
+    <div class="s-tab" onclick="sTab(this,'tp-reset')">Reset</div>
+  </div>
+  <div class="s-body">
+
+    <!-- APPEARANCE -->
+    <div class="spanel on" id="tp-look">
+      <div class="ssec">
+        <span class="sl">Accent colour</span>
+        <div class="color-grid">
+          <div class="cswatch on" data-c="#5a8fc4" style="background:#5a8fc4" onclick="quickPreset(this)"></div>
+          <div class="cswatch" data-c="#7aa0bc" style="background:#7aa0bc" onclick="quickPreset(this)"></div>
+          <div class="cswatch" data-c="#4e9e8a" style="background:#4e9e8a" onclick="quickPreset(this)"></div>
+          <div class="cswatch" data-c="#8a5ac4" style="background:#8a5ac4" onclick="quickPreset(this)"></div>
+          <div class="cswatch" data-c="#c47a3a" style="background:#c47a3a" onclick="quickPreset(this)"></div>
+          <div class="cswatch" data-c="#a05050" style="background:#a05050" onclick="quickPreset(this)"></div>
+          <div class="cswatch" data-c="#508050" style="background:#508050" onclick="quickPreset(this)"></div>
+          <div class="cswatch" data-c="#a09050" style="background:#a09050" onclick="quickPreset(this)"></div>
+        </div>
+        <input class="sinput" id="customColor" type="text" placeholder="#5a8fc4" oninput="applyAccHex(this.value)">
+      </div>
+      <div class="sdiv"></div>
+      <div class="ssec">
+        <span class="sl">UI Scale</span>
+        <input type="range" id="uiScale" min="0.7" max="1.4" step="0.05" value="1" oninput="setUIScale(this.value)">
+        <div style="text-align:center;font-family:'Space Mono',monospace;font-size:9px;color:var(--text3);margin-top:4px;" id="scaleLabel">100%</div>
+      </div>
+      <div class="sdiv"></div>
+      <div class="ssec">
+        <span class="sl">Interface</span>
+        <div class="srow"><span class="srow-label">Show block number</span>
+          <label class="toggle"><input type="checkbox" id="tog-block" checked onchange="savePrefs()"><div class="ttrack"></div><div class="tthumb"></div></label></div>
+        <div class="srow"><span class="srow-label">Show synth badge</span>
+          <label class="toggle"><input type="checkbox" id="tog-badge" checked onchange="savePrefs()"><div class="ttrack"></div><div class="tthumb"></div></label></div>
+        <div class="srow"><span class="srow-label">Show empty patches</span>
+          <label class="toggle"><input type="checkbox" id="tog-empty" onchange="savePrefs();applyFilters()"><div class="ttrack"></div><div class="tthumb"></div></label></div>
+        <div class="srow"><span class="srow-label">Language</span>
+          <select class="sselect" style="width:auto;margin:0;" onchange="setLang(this.value)">
+            <option value="en">EN</option><option value="es">ES</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- PATCHES -->
+    <div class="spanel" id="tp-sounds">
+      <div class="ssec">
+        <span class="sl">Add custom patch</span>
+        <input class="sinput" id="new-patch-name" placeholder="Patch name *">
+        <input class="sinput" id="new-patch-bank" placeholder="Bank">
+        <input class="sinput" id="new-patch-block" placeholder="Block / Slot">
+        <select class="sselect" id="new-patch-fn">
+          <option>Lead</option><option>Pad</option><option>Bass</option><option>Bell</option>
+          <option>Pluck</option><option>Strings</option><option>Brass</option><option>FX</option><option>Drums</option>
+        </select>
+        <button class="sbtn p" onclick="addCustomPatch()">+ Add patch</button>
+      </div>
+      <div class="sdiv"></div>
+      <div class="ssec">
+        <span class="sl">Custom patches</span>
+        <div class="slist" id="custom-patch-list"></div>
+        <div class="sbtn-row">
+          <button class="sbtn" onclick="exportCustomJSON()">↓ Export JSON</button>
+          <button class="sbtn d" onclick="clearCustom()">✕ Clear</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- IMPORT -->
+    <div class="spanel" id="tp-import">
+      <div class="ssec">
+        <span class="sl">Import patches</span>
+        <p style="font-size:12px;color:var(--text3);margin-bottom:10px;line-height:1.6;">
+          Import an <strong>XLSX</strong>, <strong>CSV</strong> or <strong>JSON</strong> file.<br>
+          Required column: <strong>Patch_Name</strong> or <strong>Name</strong>.<br>
+          Optional: Bank_Name, Block, Musical_Role, Instrument_Class.
+        </p>
+        <input type="file" id="importFile" accept=".xlsx,.csv,.json" style="display:none" onchange="handleImport(this)">
+        <button class="sbtn p" onclick="$('importFile').click()">📂 Select file</button>
+        <div id="importPreview" style="margin-top:10px;"></div>
+      </div>
+    </div>
+
+    <!-- MIDI -->
+    <div class="spanel" id="tp-midi">
+      <div class="ssec">
+        <span class="sl">MIDI Connection</span>
+        <div class="midi-status">
+          <div class="midi-led" id="midiLed"></div>
+          <span class="midi-status-txt" id="midiStatusTxt">Web MIDI not initialised</span>
+        </div>
+        <select class="midi-port-sel" id="midiInSel"><option value="">— MIDI In port —</option></select>
+        <select class="midi-port-sel" id="midiOutSel"><option value="">— MIDI Out port —</option></select>
+        <div style="display:flex;gap:6px;margin-top:4px;">
+          <button class="sbtn p" onclick="midiInit()">⚡ Connect</button>
+          <button class="sbtn" onclick="midiIdentify()">? Identify</button>
+        </div>
+        <div class="sdiv"></div>
+        <span class="sl">MIDI Channel</span>
+        <select class="midi-port-sel" id="midiChSel">
+          <option value="0">Ch 1 (default)</option><option value="1">Ch 2</option>
+          <option value="2">Ch 3</option><option value="3">Ch 4</option>
+          <option value="4">Ch 5</option><option value="5">Ch 6</option>
+          <option value="6">Ch 7</option><option value="7">Ch 8</option>
+          <option value="8">Ch 9</option><option value="9">Ch 10</option>
+          <option value="10">Ch 11</option><option value="11">Ch 12</option>
+          <option value="12">Ch 13</option><option value="13">Ch 14</option>
+          <option value="14">Ch 15</option><option value="15">Ch 16</option>
+        </select>
+      </div>
+      <div class="sdiv"></div>
+      <div class="ssec">
+        <span class="sl">↓ Dump from K5000W</span>
+        <p style="font-size:11px;color:var(--text3);margin-bottom:8px;line-height:1.6;">
+          Receives patches from the synth. Either press <strong>MIDI → Bulk Dump</strong> on the K5000W,
+          or use Request to ask for a specific bank.
+        </p>
+        <select class="midi-port-sel" id="dumpBankSel">
+          <option value="0">Bank A — Additive</option>
+          <option value="1">Bank B — PCM</option>
+          <option value="2">Bank D — GM / User</option>
+          <option value="3">Bank E — ME-1</option>
+          <option value="4">Bank F — ME-1</option>
+        </select>
+        <div class="sbtn-row">
+          <button class="sbtn p" onclick="midiDumpRequest()">↓ Request bank</button>
+          <button class="sbtn" id="midiListenBtn" onclick="midiListenToggle()">◉ Listen</button>
+          <button class="sbtn d" id="midiAbortBtn" style="display:none" onclick="midiAbort()">✕ Cancel</button>
+        </div>
+        <div class="midi-progress"><div class="midi-progress-bar" id="midiProgressBar"></div></div>
+        <div class="midi-log" id="midiLog">—</div>
+      </div>
+      <div class="sdiv"></div>
+      <div class="ssec">
+        <span class="sl">↑ Send patch → K5000W</span>
+        <p style="font-size:11px;color:var(--text3);margin-bottom:8px;line-height:1.6;">
+          Sends a patch from your database to the K5000W edit buffer for preview.<br>
+          Only works for patches that have stored SysEx data.
+        </p>
+        <select class="midi-port-sel" id="sendPatchSel"><option value="">— select patch with SysEx data —</option></select>
+        <button class="sbtn p" onclick="midiSendPatch()">↑ Send to edit buffer</button>
+      </div>
+      <div class="sdiv"></div>
+      <div class="ssec">
+        <span class="sl">Backup</span>
+        <p style="font-size:11px;color:var(--text3);margin-bottom:8px;line-height:1.6;">
+          Export received SysEx data as a backup file.
+        </p>
+        <div class="sbtn-row">
+          <button class="sbtn" onclick="midiExportSyx()">↓ Export .syx</button>
+          <button class="sbtn" onclick="midiExportJSON()">↓ Export .json</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- RESET -->
+    <div class="spanel" id="tp-reset">
+      <div class="ssec">
+        <span class="sl">Reset data</span>
+        <p style="font-size:12px;color:var(--text3);margin-bottom:10px;line-height:1.6;">
+          Clear all personal data: favourites, notes, tags, custom patches and overrides.
+          The built-in patch database is not affected.
+        </p>
+        <div class="sbtn-row">
+          <button class="sbtn d" onclick="resetAllData()">⚠ Reset all data</button>
+          <button class="sbtn" onclick="resetAppearance()">↺ Reset appearance</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══ EDIT MODAL ═══ -->
+<div class="modal" id="editModal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div class="modal-title" id="editModalTitle">Edit Patch</div>
+      <div class="d-close" onclick="closeEdit()">✕</div>
+    </div>
+    <div class="modal-body">
+      <div class="m-meta" id="edit-meta"></div>
+      <div class="m-label">Name (personal)</div>
+      <input class="sinput" id="edit-name" placeholder="Custom name…">
+      <div class="m-label">Function</div>
+      <div class="chip-group" id="edit-fn-group"></div>
+      <div class="m-label">Tags (comma separated)</div>
+      <input class="sinput" id="edit-tags" placeholder="dark, techno, favourite…">
+      <div class="m-label">Personal notes</div>
+      <textarea class="stextarea" id="edit-notes" placeholder="Notes about this patch…"></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="sbtn" onclick="toggleFavEdit()">☆ Favourite</button>
+      <button class="sbtn p" onclick="saveEdit()" style="flex:1;text-align:center;">✓ Save</button>
+      <button class="sbtn" onclick="closeEdit()">✕</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ STATS MODAL ═══ -->
+<div class="modal" id="statsModal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div class="modal-title">◈ Stats</div>
+      <div class="d-close" onclick="$('statsModal').classList.remove('on')">✕</div>
+    </div>
+    <div class="modal-body" id="statsBody"></div>
+  </div>
+</div>
+
+<!-- ═══ TOAST ═══ -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ════════════════════════════════════════════════════════
+// K5000W PATCH DATA — 907 patches, 11 banks
+// ════════════════════════════════════════════════════════
+const RAW_K5000W=[
+{id:1,bl:'A001',n:'K5000W Grand',bn:'Additive Bank',bnum:0,fn:'Lead',cls:'Additive lead',nt:'Additive FX 1 - preset 1 de Additive Bank'},
+{id:2,bl:'A002',n:'Bright Piano',bn:'Additive Bank',bnum:0,fn:'Bell',cls:'Additive bell',nt:'Additive Bell 2 - preset 2 de Additive Bank'},
+{id:3,bl:'A003',n:'E.Piano 1',bn:'Additive Bank',bnum:0,fn:'Bell',cls:'Additive bell',nt:'Additive FX 3 - preset 3 de Additive Bank'},
+{id:4,bl:'A004',n:'E.Piano 2',bn:'Additive Bank',bnum:0,fn:'Pluck',cls:'Additive pluck',nt:'Additive Pluck 4 - preset 4 de Additive Bank'},
+{id:5,bl:'A005',n:'E.Piano 3',bn:'Additive Bank',bnum:0,fn:'Pad',cls:'Additive pad',nt:'Additive FX 5 - preset 5 de Additive Bank'},
+{id:6,bl:'A006',n:'E.Piano 4',bn:'Additive Bank',bnum:0,fn:'Pluck',cls:'Additive pluck',nt:'Additive Lead 6 - preset 6 de Additive Bank'},
+{id:7,bl:'A007',n:'Harpsichord',bn:'Additive Bank',bnum:0,fn:'Lead',cls:'Additive lead',nt:'Additive Lead 7 - preset 7 de Additive Bank'},
+{id:8,bl:'A008',n:'Clavi',bn:'Additive Bank',bnum:0,fn:'FX',cls:'Additive fx',nt:'Additive Bell 8 - preset 8 de Additive Bank'},
+{id:9,bl:'A009',n:'Celesta',bn:'Additive Bank',bnum:0,fn:'Pluck',cls:'Additive pluck',nt:'Additive Pluck 9 - preset 9 de Additive Bank'},
+{id:10,bl:'A010',n:'Glocken',bn:'Additive Bank',bnum:0,fn:'Bell',cls:'Additive bell',nt:'Additive Pad 10 - preset 10 de Additive Bank'},
+{id:11,bl:'A011',n:'Music Box',bn:'Additive Bank',bnum:0,fn:'Pluck',cls:'Additive pluck',nt:'Additive Pad 11 - preset 11 de Additive Bank'},
+{id:12,bl:'A012',n:'Vibraphone',bn:'Additive Bank',bnum:0,fn:'FX',cls:'Additive fx',nt:'Additive Bell 12 - preset 12 de Additive Bank'},
+{id:13,bl:'A013',n:'Marimba',bn:'Additive Bank',bnum:0,fn:'Bell',cls:'Additive bell',nt:'Additive FX 13 - preset 13 de Additive Bank'},
+{id:14,bl:'A014',n:'Xylophone',bn:'Additive Bank',bnum:0,fn:'Lead',cls:'Additive lead',nt:'Additive FX 14 - preset 14 de Additive Bank'},
+{id:15,bl:'A015',n:'Tubular Bell',bn:'Additive Bank',bnum:0,fn:'Lead',cls:'Additive lead',nt:'Additive Lead 15 - preset 15 de Additive Bank'},
+{id:16,bl:'A016',n:'Santur',bn:'Additive Bank',bnum:0,fn:'Bell',cls:'Additive bell',nt:'Additive Lead 16 - preset 16 de Additive Bank'},
+{id:17,bl:'A017',n:'Organ 1',bn:'Additive Bank',bnum:0,fn:'FX',cls:'Additive fx',nt:'Additive Lead 17 - preset 17 de Additive Bank'},
+{id:18,bl:'A018',n:'Organ 2',bn:'Additive Bank',bnum:0,fn:'Pluck',cls:'Additive pluck',nt:'Additive Lead 18 - preset 18 de Additive Bank'},
+{id:19,bl:'A019',n:'Organ 3',bn:'Additive Bank',bnum:0,fn:'Pluck',cls:'Additive pluck',nt:'Additive Pad 19 - preset 19 de Additive Bank'},
+{id:20,bl:'A020',n:'Church Organ',bn:'Additive Bank',bnum:0,fn:'FX',cls:'Additive fx',nt:'Additive Pad 20 - preset 20 de Additive Bank'},
+{id:21,bl:'A021',n:'Reed Organ',bn:'Additive Bank',bnum:0,fn:'Bell',cls:'Additive bell',nt:'Additive Lead 21 - preset 21 de Additive Bank'},
+{id:22,bl:'A022',n:'Accordion',bn:'Additive Bank',bnum:0,fn:'Lead',cls:'Additive lead',nt:'Additive Pad 22 - preset 22 de Additive Bank'},
+{id:23,bl:'A023',n:'Harmonica',bn:'Additive Bank',bnum:0,fn:'Bell',cls:'Additive bell',nt:'Additive Lead 23 - preset 23 de Additive Bank'},
+{id:24,bl:'A024',n:'Bandoneon',bn:'Additive Bank',bnum:0,fn:'FX',cls:'Additive fx',nt:'Additive Bell 24 - preset 24 de Additive Bank'},
+{id:25,bl:'A025',n:'Nylon Guitar',bn:'Additive Bank',bnum:0,fn:'Pad',cls:'Additive pad',nt:'Additive Pluck 25 - preset 25 de Additive Bank'},
+{id:26,bl:'A026',n:'Steel Guitar',bn:'Additive Bank',bnum:0,fn:'Pluck',cls:'Additive pluck',nt:'Additive Pad 26 - preset 26 de Additive Bank'},
+{id:27,bl:'A027',n:'Jazz Guitar',bn:'Additive Bank',bnum:0,fn:'Pluck',cls:'Additive pluck',nt:'Additive Bell 27 - preset 27 de Additive Bank'},
+{id:28,bl:'A028',n:'Clean Guitar',bn:'Additive Bank',bnum:0,fn:'Pad',cls:'Additive pad',nt:'Additive FX 28 - preset 28 de Additive Bank'},
+{id:29,bl:'A029',n:'Muted Guitar',bn:'Additive Bank',bnum:0,fn:'FX',cls:'Additive fx',nt:'Additive Pad 29 - preset 29 de Additive Bank'},
+{id:30,bl:'A030',n:'Overdrive Gt',bn:'Additive Bank',bnum:0,fn:'Pluck',cls:'Additive pluck',nt:'Additive Pluck 30 - preset 30 de Additive Bank'},
+{id:31,bl:'A031',n:'Distortion Gt',bn:'Additive Bank',bnum:0,fn:'Lead',cls:'Additive lead',nt:'Additive Pluck 31 - preset 31 de Additive Bank'},
+{id:32,bl:'A032',n:'Gt Harmonics',bn:'Additive Bank',bnum:0,fn:'Lead',cls:'Additive lead',nt:'Additive Pluck 32 - preset 32 de Additive Bank'},
+{id:33,bl:'A033',n:'Acoustic Bass',bn:'Additive Bank',bnum:1,fn:'Pluck',cls:'Additive pluck',nt:'Additive Bell 33 - preset 33 de Additive Bank'},
+{id:34,bl:'A034',n:'Finger Bass',bn:'Additive Bank',bnum:1,fn:'Lead',cls:'Additive lead',nt:'Additive FX 34 - preset 34 de Additive Bank'},
+{id:35,bl:'A035',n:'Pick Bass',bn:'Additive Bank',bnum:1,fn:'Pad',cls:'Additive pad',nt:'Additive Pad 35 - preset 35 de Additive Bank'},
+{id:36,bl:'A036',n:'Fretless Bass',bn:'Additive Bank',bnum:1,fn:'Pluck',cls:'Additive pluck',nt:'Additive Pluck 36 - preset 36 de Additive Bank'},
+{id:37,bl:'A037',n:'Slap Bass 1',bn:'Additive Bank',bnum:1,fn:'Lead',cls:'Additive lead',nt:'Additive Pluck 37 - preset 37 de Additive Bank'},
+{id:38,bl:'A038',n:'Slap Bass 2',bn:'Additive Bank',bnum:1,fn:'Pad',cls:'Additive pad',nt:'Additive Bell 38 - preset 38 de Additive Bank'},
+{id:39,bl:'A039',n:'Synth Bass 1',bn:'Additive Bank',bnum:1,fn:'Lead',cls:'Additive lead',nt:'Additive Pad 39 - preset 39 de Additive Bank'},
+{id:40,bl:'A040',n:'Synth Bass 2',bn:'Additive Bank',bnum:1,fn:'Pluck',cls:'Additive pluck',nt:'Additive Lead 40 - preset 40 de Additive Bank'},
+{id:41,bl:'A041',n:'Violin',bn:'Additive Bank',bnum:1,fn:'Bell',cls:'Additive bell',nt:'Additive FX 41 - preset 41 de Additive Bank'},
+{id:42,bl:'A042',n:'Viola',bn:'Additive Bank',bnum:1,fn:'Lead',cls:'Additive lead',nt:'Additive Bell 42 - preset 42 de Additive Bank'},
+{id:43,bl:'A043',n:'Cello',bn:'Additive Bank',bnum:1,fn:'Bell',cls:'Additive bell',nt:'Additive Pad 43 - preset 43 de Additive Bank'},
+{id:44,bl:'A044',n:'Contrabass',bn:'Additive Bank',bnum:1,fn:'Pluck',cls:'Additive pluck',nt:'Additive Lead 44 - preset 44 de Additive Bank'},
+{id:45,bl:'A045',n:'Tremolo Str',bn:'Additive Bank',bnum:1,fn:'Pluck',cls:'Additive pluck',nt:'Additive Pluck 45 - preset 45 de Additive Bank'},
+{id:46,bl:'A046',n:'Pizzicato Str',bn:'Additive Bank',bnum:1,fn:'Lead',cls:'Additive lead',nt:'Additive Pad 46 - preset 46 de Additive Bank'},
+{id:47,bl:'A047',n:'Harp',bn:'Additive Bank',bnum:1,fn:'Pad',cls:'Additive pad',nt:'Additive FX 47 - preset 47 de Additive Bank'},
+{id:48,bl:'A048',n:'Timpani',bn:'Additive Bank',bnum:1,fn:'Lead',cls:'Additive lead',nt:'Additive Lead 48 - preset 48 de Additive Bank'},
+{id:49,bl:'A049',n:'Strings 1',bn:'Additive Bank',bnum:1,fn:'Pad',cls:'Additive pad',nt:'Additive Bell 49 - preset 49 de Additive Bank'},
+{id:50,bl:'A050',n:'Strings 2',bn:'Additive Bank',bnum:1,fn:'Pluck',cls:'Additive pluck',nt:'Additive Bell 50 - preset 50 de Additive Bank'},
+{id:51,bl:'A051',n:'Synth Str 1',bn:'Additive Bank',bnum:1,fn:'Lead',cls:'Additive lead',nt:'Additive Pad 51 - preset 51 de Additive Bank'},
+{id:52,bl:'A052',n:'Synth Str 2',bn:'Additive Bank',bnum:1,fn:'Pad',cls:'Additive pad',nt:'Additive Bell 52 - preset 52 de Additive Bank'},
+{id:53,bl:'A053',n:'Choir Aahs',bn:'Additive Bank',bnum:1,fn:'FX',cls:'Additive fx',nt:'Additive Pad 53 - preset 53 de Additive Bank'},
+{id:54,bl:'A054',n:'Voice Oohs',bn:'Additive Bank',bnum:1,fn:'Pad',cls:'Additive pad',nt:'Additive Pluck 54 - preset 54 de Additive Bank'},
+{id:55,bl:'A055',n:'Synth Vox',bn:'Additive Bank',bnum:1,fn:'Pad',cls:'Additive pad',nt:'Additive Pad 55 - preset 55 de Additive Bank'},
+{id:56,bl:'A056',n:'Orchestra Hit',bn:'Additive Bank',bnum:1,fn:'Pad',cls:'Additive pad',nt:'Additive Pad 56 - preset 56 de Additive Bank'},
+{id:57,bl:'A057',n:'Trumpet',bn:'Additive Bank',bnum:1,fn:'FX',cls:'Additive fx',nt:'Additive Bell 57 - preset 57 de Additive Bank'},
+{id:58,bl:'A058',n:'Trombone',bn:'Additive Bank',bnum:1,fn:'Pluck',cls:'Additive pluck',nt:'Additive Pad 58 - preset 58 de Additive Bank'},
+{id:59,bl:'A059',n:'Tuba',bn:'Additive Bank',bnum:1,fn:'Pad',cls:'Additive pad',nt:'Additive Lead 59 - preset 59 de Additive Bank'},
+{id:60,bl:'A060',n:'Muted Trumpet',bn:'Additive Bank',bnum:1,fn:'Pluck',cls:'Additive pluck',nt:'Additive Pad 60 - preset 60 de Additive Bank'},
+{id:61,bl:'A061',n:'French Horn',bn:'Additive Bank',bnum:1,fn:'Pad',cls:'Additive pad',nt:'Additive Bell 61 - preset 61 de Additive Bank'},
+{id:62,bl:'A062',n:'Brass Section',bn:'Additive Bank',bnum:1,fn:'Lead',cls:'Additive lead',nt:'Additive FX 62 - preset 62 de Additive Bank'},
+{id:63,bl:'A063',n:'Synth Brass 1',bn:'Additive Bank',bnum:1,fn:'Lead',cls:'Additive lead',nt:'Additive Pad 63 - preset 63 de Additive Bank'},
+{id:64,bl:'A064',n:'Synth Brass 2',bn:'Additive Bank',bnum:1,fn:'Lead',cls:'Additive lead',nt:'Additive Pad 64 - preset 64 de Additive Bank'},
+{id:65,bl:'A065',n:'Soprano Sax',bn:'Additive Bank',bnum:2,fn:'Pluck',cls:'Additive pluck',nt:'Additive Pad 65 - preset 65 de Additive Bank'},
+{id:66,bl:'A066',n:'Alto Sax',bn:'Additive Bank',bnum:2,fn:'Pad',cls:'Additive pad',nt:'Additive Pad 66 - preset 66 de Additive Bank'},
+{id:67,bl:'A067',n:'Tenor Sax',bn:'Additive Bank',bnum:2,fn:'Pluck',cls:'Additive pluck',nt:'Additive FX 67 - preset 67 de Additive Bank'},
+{id:68,bl:'A068',n:'Bari Sax',bn:'Additive Bank',bnum:2,fn:'FX',cls:'Additive fx',nt:'Additive Bell 68 - preset 68 de Additive Bank'},
+{id:69,bl:'A069',n:'Oboe',bn:'Additive Bank',bnum:2,fn:'Bell',cls:'Additive bell',nt:'Additive Bell 69 - preset 69 de Additive Bank'},
+{id:70,bl:'A070',n:'English Horn',bn:'Additive Bank',bnum:2,fn:'Bell',cls:'Additive bell',nt:'Additive Bell 70 - preset 70 de Additive Bank'},
+{id:71,bl:'A071',n:'Bassoon',bn:'Additive Bank',bnum:2,fn:'FX',cls:'Additive fx',nt:'Additive Bell 71 - preset 71 de Additive Bank'},
+{id:72,bl:'A072',n:'Clarinet',bn:'Additive Bank',bnum:2,fn:'Lead',cls:'Additive lead',nt:'Additive Bell 72 - preset 72 de Additive Bank'},
+{id:73,bl:'A073',n:'Piccolo',bn:'Additive Bank',bnum:2,fn:'Bell',cls:'Additive bell',nt:'Additive FX 73 - preset 73 de Additive Bank'},
+{id:74,bl:'A074',n:'Flute',bn:'Additive Bank',bnum:2,fn:'FX',cls:'Additive fx',nt:'Additive Pad 74 - preset 74 de Additive Bank'},
+{id:75,bl:'A075',n:'Recorder',bn:'Additive Bank',bnum:2,fn:'Bell',cls:'Additive bell',nt:'Additive FX 75 - preset 75 de Additive Bank'},
+{id:76,bl:'A076',n:'Pan Flute',bn:'Additive Bank',bnum:2,fn:'Pluck',cls:'Additive pluck',nt:'Additive Bell 76 - preset 76 de Additive Bank'},
+{id:77,bl:'A077',n:'Bottle Blow',bn:'Additive Bank',bnum:2,fn:'Pad',cls:'Additive pad',nt:'Additive Pluck 77 - preset 77 de Additive Bank'},
+{id:78,bl:'A078',n:'Shakuhachi',bn:'Additive Bank',bnum:2,fn:'Pad',cls:'Additive pad',nt:'Additive Bell 78 - preset 78 de Additive Bank'},
+{id:79,bl:'A079',n:'Whistle',bn:'Additive Bank',bnum:2,fn:'Bell',cls:'Additive bell',nt:'Additive Lead 79 - preset 79 de Additive Bank'},
+{id:80,bl:'A080',n:'Ocarina',bn:'Additive Bank',bnum:2,fn:'Pad',cls:'Additive pad',nt:'Additive Pad 80 - preset 80 de Additive Bank'},
+{id:81,bl:'A081',n:'Lead 1 (square)',bn:'Additive Bank',bnum:2,fn:'Bell',cls:'Additive bell',nt:'Additive FX 81 - preset 81 de Additive Bank'},
+{id:82,bl:'A082',n:'Lead 2 (saw)',bn:'Additive Bank',bnum:2,fn:'Lead',cls:'Additive lead',nt:'Additive Lead 82 - preset 82 de Additive Bank'},
+{id:83,bl:'A083',n:'Lead 3 (caliope)',bn:'Additive Bank',bnum:2,fn:'Pluck',cls:'Additive pluck',nt:'Additive Lead 83 - preset 83 de Additive Bank'},
+{id:84,bl:'A084',n:'Lead 4 (chiff)',bn:'Additive Bank',bnum:2,fn:'FX',cls:'Additive fx',nt:'Additive FX 84 - preset 84 de Additive Bank'},
+{id:85,bl:'A085',n:'Lead 5 (charang)',bn:'Additive Bank',bnum:2,fn:'Pad',cls:'Additive pad',nt:'Additive Bell 85 - preset 85 de Additive Bank'},
+{id:86,bl:'A086',n:'Lead 6 (voice)',bn:'Additive Bank',bnum:2,fn:'Bell',cls:'Additive bell',nt:'Additive FX 86 - preset 86 de Additive Bank'},
+{id:87,bl:'A087',n:'Lead 7 (fifths)',bn:'Additive Bank',bnum:2,fn:'FX',cls:'Additive fx',nt:'Additive FX 87 - preset 87 de Additive Bank'},
+{id:88,bl:'A088',n:'Lead 8 (bass+lead)',bn:'Additive Bank',bnum:2,fn:'Pluck',cls:'Additive pluck',nt:'Additive Pluck 88 - preset 88 de Additive Bank'},
+{id:89,bl:'A089',n:'Pad 1 (new age)',bn:'Additive Bank',bnum:2,fn:'Pluck',cls:'Additive pluck',nt:'Additive Pluck 89 - preset 89 de Additive Bank'},
+{id:90,bl:'A090',n:'Pad 2 (warm)',bn:'Additive Bank',bnum:2,fn:'Pad',cls:'Additive pad',nt:'Additive Pluck 90 - preset 90 de Additive Bank'},
+{id:91,bl:'A091',n:'Pad 3 (poly synth)',bn:'Additive Bank',bnum:2,fn:'Pad',cls:'Additive pad',nt:'Additive FX 91 - preset 91 de Additive Bank'},
+{id:92,bl:'A092',n:'Pad 4 (choir)',bn:'Additive Bank',bnum:2,fn:'Bell',cls:'Additive bell',nt:'Additive FX 92 - preset 92 de Additive Bank'},
+{id:93,bl:'A093',n:'Pad 5 (bowed)',bn:'Additive Bank',bnum:2,fn:'Lead',cls:'Additive lead',nt:'Additive Lead 93 - preset 93 de Additive Bank'},
+{id:94,bl:'A094',n:'Pad 6 (metallic)',bn:'Additive Bank',bnum:2,fn:'Lead',cls:'Additive lead',nt:'Additive Pad 94 - preset 94 de Additive Bank'},
+{id:95,bl:'A095',n:'Pad 7 (halo)',bn:'Additive Bank',bnum:2,fn:'Lead',cls:'Additive lead',nt:'Additive FX 95 - preset 95 de Additive Bank'},
+{id:96,bl:'A096',n:'Pad 8 (sweep)',bn:'Additive Bank',bnum:2,fn:'Lead',cls:'Additive lead',nt:'Additive FX 96 - preset 96 de Additive Bank'},
+{id:97,bl:'A097',n:'FX 1 (rain)',bn:'Additive Bank',bnum:3,fn:'Lead',cls:'Additive lead',nt:'Additive Pluck 97 - preset 97 de Additive Bank'},
+{id:98,bl:'A098',n:'FX 2 (soundtrack)',bn:'Additive Bank',bnum:3,fn:'Pad',cls:'Additive pad',nt:'Additive Pluck 98 - preset 98 de Additive Bank'},
+{id:99,bl:'A099',n:'FX 3 (crystal)',bn:'Additive Bank',bnum:3,fn:'Pluck',cls:'Additive pluck',nt:'Additive Pad 99 - preset 99 de Additive Bank'},
+{id:100,bl:'A100',n:'FX 4 (atmosphere)',bn:'Additive Bank',bnum:3,fn:'Lead',cls:'Additive lead',nt:'Additive Pad 100 - preset 100 de Additive Bank'},
+{id:101,bl:'A101',n:'FX 5 (brightness)',bn:'Additive Bank',bnum:3,fn:'Lead',cls:'Additive lead',nt:'Additive Lead 101 - preset 101 de Additive Bank'},
+{id:102,bl:'A102',n:'FX 6 (goblins)',bn:'Additive Bank',bnum:3,fn:'Pluck',cls:'Additive pluck',nt:'Additive Pad 102 - preset 102 de Additive Bank'},
+{id:103,bl:'A103',n:'FX 7 (echoes)',bn:'Additive Bank',bnum:3,fn:'Bell',cls:'Additive bell',nt:'Additive Lead 103 - preset 103 de Additive Bank'},
+{id:104,bl:'A104',n:'FX 8 (sci-fi)',bn:'Additive Bank',bnum:3,fn:'Lead',cls:'Additive lead',nt:'Additive Bell 104 - preset 104 de Additive Bank'},
+{id:105,bl:'A105',n:'Sitar',bn:'Additive Bank',bnum:3,fn:'Lead',cls:'Additive lead',nt:'Additive Pad 105 - preset 105 de Additive Bank'},
+{id:106,bl:'A106',n:'Banjo',bn:'Additive Bank',bnum:3,fn:'Bell',cls:'Additive bell',nt:'Additive Bell 106 - preset 106 de Additive Bank'},
+{id:107,bl:'A107',n:'Shamisen',bn:'Additive Bank',bnum:3,fn:'Pluck',cls:'Additive pluck',nt:'Additive Lead 107 - preset 107 de Additive Bank'},
+{id:108,bl:'A108',n:'Koto',bn:'Additive Bank',bnum:3,fn:'FX',cls:'Additive fx',nt:'Additive FX 108 - preset 108 de Additive Bank'},
+{id:109,bl:'A109',n:'Kalimba',bn:'Additive Bank',bnum:3,fn:'FX',cls:'Additive fx',nt:'Additive Lead 109 - preset 109 de Additive Bank'},
+{id:110,bl:'A110',n:'Bagpipe',bn:'Additive Bank',bnum:3,fn:'FX',cls:'Additive fx',nt:'Additive Pad 110 - preset 110 de Additive Bank'},
+{id:111,bl:'A111',n:'Fiddle',bn:'Additive Bank',bnum:3,fn:'Pluck',cls:'Additive pluck',nt:'Additive Pluck 111 - preset 111 de Additive Bank'},
+{id:112,bl:'A112',n:'Shanai',bn:'Additive Bank',bnum:3,fn:'Lead',cls:'Additive lead',nt:'Additive Pad 112 - preset 112 de Additive Bank'},
+{id:113,bl:'A113',n:'Tinkle Bell',bn:'Additive Bank',bnum:3,fn:'Lead',cls:'Additive lead',nt:'Additive Pluck 113 - preset 113 de Additive Bank'},
+{id:114,bl:'A114',n:'Agogo',bn:'Additive Bank',bnum:3,fn:'FX',cls:'Additive fx',nt:'Additive Bell 114 - preset 114 de Additive Bank'},
+{id:115,bl:'A115',n:'Steel Drums',bn:'Additive Bank',bnum:3,fn:'FX',cls:'Additive fx',nt:'Additive FX 115 - preset 115 de Additive Bank'},
+{id:116,bl:'A116',n:'Woodblock',bn:'Additive Bank',bnum:3,fn:'Pluck',cls:'Additive pluck',nt:'Additive FX 116 - preset 116 de Additive Bank'},
+{id:117,bl:'A117',n:'Taiko Drum',bn:'Additive Bank',bnum:3,fn:'Lead',cls:'Additive lead',nt:'Additive FX 117 - preset 117 de Additive Bank'},
+{id:118,bl:'A118',n:'Melodic Tom',bn:'Additive Bank',bnum:3,fn:'Pad',cls:'Additive pad',nt:'Additive Pad 118 - preset 118 de Additive Bank'},
+{id:119,bl:'A119',n:'Synth Drum',bn:'Additive Bank',bnum:3,fn:'Lead',cls:'Additive lead',nt:'Additive Lead 119 - preset 119 de Additive Bank'},
+{id:120,bl:'A120',n:'Reverse Cymbal',bn:'Additive Bank',bnum:3,fn:'Pad',cls:'Additive pad',nt:'Additive Bell 120 - preset 120 de Additive Bank'},
+{id:121,bl:'A121',n:'Gtr Fret Noise',bn:'Additive Bank',bnum:3,fn:'Lead',cls:'Additive lead',nt:'Additive Pad 121 - preset 121 de Additive Bank'},
+{id:122,bl:'A122',n:'Breath Noise',bn:'Additive Bank',bnum:3,fn:'FX',cls:'Additive fx',nt:'Additive FX 122 - preset 122 de Additive Bank'},
+{id:123,bl:'A123',n:'Seashore',bn:'Additive Bank',bnum:3,fn:'Pad',cls:'Additive pad',nt:'Additive Bell 123 - preset 123 de Additive Bank'},
+{id:124,bl:'A124',n:'Bird Tweet',bn:'Additive Bank',bnum:3,fn:'Pluck',cls:'Additive pluck',nt:'Additive FX 124 - preset 124 de Additive Bank'},
+{id:125,bl:'A125',n:'Telephone',bn:'Additive Bank',bnum:3,fn:'Lead',cls:'Additive lead',nt:'Additive FX 125 - preset 125 de Additive Bank'},
+{id:126,bl:'A126',n:'Helicopter',bn:'Additive Bank',bnum:3,fn:'FX',cls:'Additive fx',nt:'Additive FX 126 - preset 126 de Additive Bank'},
+{id:127,bl:'A127',n:'Applause',bn:'Additive Bank',bnum:3,fn:'Pad',cls:'Additive pad',nt:'Additive Bell 127 - preset 127 de Additive Bank'},
+{id:128,bl:'A128',n:'Gunshot',bn:'Additive Bank',bnum:3,fn:'FX',cls:'Additive fx',nt:'Additive Pad 128 - preset 128 de Additive Bank'},
+{id:129,bl:'B001',n:'K5000 Grand',bn:'PCM Bank',bnum:0,fn:'Strings',cls:'PCM strings',nt:'PCM Strings 1 - preset 1 de PCM Bank'},
+{id:130,bl:'B002',n:'Harmonic Pno',bn:'PCM Bank',bnum:0,fn:'Brass',cls:'PCM brass',nt:'PCM Guitar 2 - preset 2 de PCM Bank'},
+{id:131,bl:'B003',n:'Frozen Pno',bn:'PCM Bank',bnum:0,fn:'Strings',cls:'PCM strings',nt:'PCM Strings 3 - preset 3 de PCM Bank'},
+{id:132,bl:'B004',n:'Additive EP',bn:'PCM Bank',bnum:0,fn:'Brass',cls:'PCM brass',nt:'PCM Piano 4 - preset 4 de PCM Bank'},
+{id:133,bl:'B005',n:'Bell EP',bn:'PCM Bank',bnum:0,fn:'Drums',cls:'PCM drums',nt:'PCM Guitar 5 - preset 5 de PCM Bank'},
+{id:134,bl:'B006',n:'Dig. Perc.',bn:'PCM Bank',bnum:0,fn:'Strings',cls:'PCM strings',nt:'PCM Brass 6 - preset 6 de PCM Bank'},
+{id:135,bl:'B007',n:'',bn:'PCM Bank',bnum:0,fn:'Brass',cls:'PCM brass',nt:'PCM Strings 7 - preset 7 de PCM Bank'},
+{id:136,bl:'B008',n:'',bn:'PCM Bank',bnum:0,fn:'Drums',cls:'PCM drums',nt:'PCM Guitar 8 - preset 8 de PCM Bank'},
+{id:137,bl:'B009',n:'',bn:'PCM Bank',bnum:0,fn:'Brass',cls:'PCM brass',nt:'PCM Piano 9 - preset 9 de PCM Bank'},
+{id:138,bl:'B010',n:'Drawbar 1',bn:'PCM Bank',bnum:0,fn:'Strings',cls:'PCM strings',nt:'PCM Brass 10 - preset 10 de PCM Bank'},
+{id:139,bl:'B011',n:'Perc. Organ',bn:'PCM Bank',bnum:0,fn:'Brass',cls:'PCM brass',nt:'PCM Brass 11 - preset 11 de PCM Bank'},
+{id:140,bl:'B012',n:'Click Organ',bn:'PCM Bank',bnum:0,fn:'Strings',cls:'PCM strings',nt:'PCM Piano 12 - preset 12 de PCM Bank'},
+{id:141,bl:'B013',n:'Church Org',bn:'PCM Bank',bnum:0,fn:'Strings',cls:'PCM strings',nt:'PCM Guitar 13 - preset 13 de PCM Bank'},
+{id:142,bl:'B014',n:'',bn:'PCM Bank',bnum:0,fn:'Strings',cls:'PCM strings',nt:'PCM Piano 14 - preset 14 de PCM Bank'},
+{id:143,bl:'B015',n:'',bn:'PCM Bank',bnum:0,fn:'Strings',cls:'PCM strings',nt:'PCM Strings 15 - preset 15 de PCM Bank'},
+{id:144,bl:'B016',n:'',bn:'PCM Bank',bnum:0,fn:'Strings',cls:'PCM strings',nt:'PCM Strings 16 - preset 16 de PCM Bank'},
+{id:145,bl:'B017',n:'',bn:'PCM Bank',bnum:0,fn:'Guitar',cls:'PCM guitar',nt:'PCM Guitar 17 - preset 17 de PCM Bank'},
+{id:146,bl:'B018',n:'',bn:'PCM Bank',bnum:0,fn:'Drums',cls:'PCM drums',nt:'PCM Brass 18 - preset 18 de PCM Bank'},
+{id:147,bl:'B019',n:'',bn:'PCM Bank',bnum:0,fn:'Piano',cls:'PCM piano',nt:'PCM Brass 19 - preset 19 de PCM Bank'},
+{id:148,bl:'B020',n:'Nylon Gtr',bn:'PCM Bank',bnum:0,fn:'Guitar',cls:'PCM guitar',nt:'PCM Strings 20 - preset 20 de PCM Bank'},
+{id:149,bl:'B021',n:'Steel Gtr',bn:'PCM Bank',bnum:0,fn:'Brass',cls:'PCM brass',nt:'PCM Drums 21 - preset 21 de PCM Bank'},
+{id:150,bl:'B022',n:'Overdrive',bn:'PCM Bank',bnum:0,fn:'Drums',cls:'PCM drums',nt:'PCM Strings 22 - preset 22 de PCM Bank'},
+{id:151,bl:'B023',n:'',bn:'PCM Bank',bnum:0,fn:'Piano',cls:'PCM piano',nt:'PCM Guitar 23 - preset 23 de PCM Bank'},
+{id:152,bl:'B024',n:'',bn:'PCM Bank',bnum:0,fn:'Piano',cls:'PCM piano',nt:'PCM Brass 24 - preset 24 de PCM Bank'},
+{id:153,bl:'B025',n:'',bn:'PCM Bank',bnum:0,fn:'Drums',cls:'PCM drums',nt:'PCM Drums 25 - preset 25 de PCM Bank'},
+{id:154,bl:'B026',n:'',bn:'PCM Bank',bnum:0,fn:'Brass',cls:'PCM brass',nt:'PCM Brass 26 - preset 26 de PCM Bank'},
+{id:155,bl:'B027',n:'',bn:'PCM Bank',bnum:0,fn:'Strings',cls:'PCM strings',nt:'PCM Piano 27 - preset 27 de PCM Bank'},
+{id:156,bl:'B028',n:'',bn:'PCM Bank',bnum:0,fn:'Guitar',cls:'PCM guitar',nt:'PCM Guitar 28 - preset 28 de PCM Bank'},
+{id:157,bl:'B029',n:'',bn:'PCM Bank',bnum:0,fn:'Brass',cls:'PCM brass',nt:'PCM Drums 29 - preset 29 de PCM Bank'},
+{id:158,bl:'B030',n:'Ac. Bass',bn:'PCM Bank',bnum:0,fn:'Strings',cls:'PCM strings',nt:'PCM Strings 30 - preset 30 de PCM Bank'},
+{id:159,bl:'B031',n:'Fing. Bass',bn:'PCM Bank',bnum:0,fn:'Piano',cls:'PCM piano',nt:'PCM Strings 31 - preset 31 de PCM Bank'},
+{id:160,bl:'B032',n:'Pick. Bass',bn:'PCM Bank',bnum:0,fn:'Drums',cls:'PCM drums',nt:'PCM Strings 32 - preset 32 de PCM Bank'},
+{id:161,bl:'B033',n:'Fretless',bn:'PCM Bank',bnum:1,fn:'Brass',cls:'PCM brass',nt:'PCM Strings 33 - preset 33 de PCM Bank'},
+{id:162,bl:'B034',n:'Slap Bass',bn:'PCM Bank',bnum:1,fn:'Brass',cls:'PCM brass',nt:'PCM Drums 34 - preset 34 de PCM Bank'},
+{id:163,bl:'B035',n:'Synth Bass 1',bn:'PCM Bank',bnum:1,fn:'Drums',cls:'PCM drums',nt:'PCM Piano 35 - preset 35 de PCM Bank'},
+{id:164,bl:'B036',n:'Reso Bass 1',bn:'PCM Bank',bnum:1,fn:'Drums',cls:'PCM drums',nt:'PCM Strings 36 - preset 36 de PCM Bank'},
+{id:165,bl:'B037',n:'Formant Bass',bn:'PCM Bank',bnum:1,fn:'Guitar',cls:'PCM guitar',nt:'PCM Guitar 37 - preset 37 de PCM Bank'},
+{id:166,bl:'B038',n:'Rubber Bass',bn:'PCM Bank',bnum:1,fn:'Guitar',cls:'PCM guitar',nt:'PCM Strings 38 - preset 38 de PCM Bank'},
+{id:167,bl:'B039',n:'Moog Bass',bn:'PCM Bank',bnum:1,fn:'Piano',cls:'PCM piano',nt:'PCM Strings 39 - preset 39 de PCM Bank'},
+{id:168,bl:'B040',n:'Analog Bass',bn:'PCM Bank',bnum:1,fn:'Drums',cls:'PCM drums',nt:'PCM Piano 40 - preset 40 de PCM Bank'},
+{id:169,bl:'B041',n:'Violin',bn:'PCM Bank',bnum:1,fn:'Drums',cls:'PCM drums',nt:'PCM Strings 41 - preset 41 de PCM Bank'},
+{id:170,bl:'B042',n:'Viola',bn:'PCM Bank',bnum:1,fn:'Guitar',cls:'PCM guitar',nt:'PCM Guitar 42 - preset 42 de PCM Bank'},
+{id:171,bl:'B043',n:'Cello',bn:'PCM Bank',bnum:1,fn:'Guitar',cls:'PCM guitar',nt:'PCM Strings 43 - preset 43 de PCM Bank'},
+{id:172,bl:'B044',n:'Contrabass',bn:'PCM Bank',bnum:1,fn:'Guitar',cls:'PCM guitar',nt:'PCM Piano 44 - preset 44 de PCM Bank'},
+{id:173,bl:'B045',n:'Tremolo',bn:'PCM Bank',bnum:1,fn:'Drums',cls:'PCM drums',nt:'PCM Strings 45 - preset 45 de PCM Bank'},
+{id:174,bl:'B046',n:'Pizzicato',bn:'PCM Bank',bnum:1,fn:'Piano',cls:'PCM piano',nt:'PCM Brass 46 - preset 46 de PCM Bank'},
+{id:175,bl:'B047',n:'Harp',bn:'PCM Bank',bnum:1,fn:'Piano',cls:'PCM piano',nt:'PCM Guitar 47 - preset 47 de PCM Bank'},
+{id:176,bl:'B048',n:'Timpani',bn:'PCM Bank',bnum:1,fn:'Strings',cls:'PCM strings',nt:'PCM Brass 48 - preset 48 de PCM Bank'},
+{id:177,bl:'B049',n:'Strings',bn:'PCM Bank',bnum:1,fn:'Guitar',cls:'PCM guitar',nt:'PCM Guitar 49 - preset 49 de PCM Bank'},
+{id:178,bl:'B050',n:'Synth Str',bn:'PCM Bank',bnum:1,fn:'Brass',cls:'PCM brass',nt:'PCM Guitar 50 - preset 50 de PCM Bank'},
+{id:179,bl:'B051',n:'Solina',bn:'PCM Bank',bnum:1,fn:'Drums',cls:'PCM drums',nt:'PCM Strings 51 - preset 51 de PCM Bank'},
+{id:180,bl:'B052',n:'Marcato Str',bn:'PCM Bank',bnum:1,fn:'Brass',cls:'PCM brass',nt:'PCM Piano 52 - preset 52 de PCM Bank'},
+{id:181,bl:'B053',n:'Choir',bn:'PCM Bank',bnum:1,fn:'Strings',cls:'PCM strings',nt:'PCM Piano 53 - preset 53 de PCM Bank'},
+{id:182,bl:'B054',n:'Voice Ooh',bn:'PCM Bank',bnum:1,fn:'Brass',cls:'PCM brass',nt:'PCM Strings 54 - preset 54 de PCM Bank'},
+{id:183,bl:'B055',n:'Synth Vox',bn:'PCM Bank',bnum:1,fn:'Drums',cls:'PCM drums',nt:'PCM Drums 55 - preset 55 de PCM Bank'},
+{id:184,bl:'B056',n:'Formant Vox',bn:'PCM Bank',bnum:1,fn:'Drums',cls:'PCM drums',nt:'PCM Piano 56 - preset 56 de PCM Bank'},
+{id:185,bl:'B057',n:'Orch Hit',bn:'PCM Bank',bnum:1,fn:'Guitar',cls:'PCM guitar',nt:'PCM Guitar 57 - preset 57 de PCM Bank'},
+{id:186,bl:'B058',n:'',bn:'PCM Bank',bnum:1,fn:'Guitar',cls:'PCM guitar',nt:'PCM Guitar 58 - preset 58 de PCM Bank'},
+{id:187,bl:'B059',n:'',bn:'PCM Bank',bnum:1,fn:'Drums',cls:'PCM drums',nt:'PCM Guitar 59 - preset 59 de PCM Bank'},
+{id:188,bl:'B060',n:'Brass Sect',bn:'PCM Bank',bnum:1,fn:'Guitar',cls:'PCM guitar',nt:'PCM Piano 60 - preset 60 de PCM Bank'},
+{id:189,bl:'B061',n:'Synth Brass',bn:'PCM Bank',bnum:1,fn:'Brass',cls:'PCM brass',nt:'PCM Brass 61 - preset 61 de PCM Bank'},
+{id:190,bl:'B062',n:'Analog Brass',bn:'PCM Bank',bnum:1,fn:'Piano',cls:'PCM piano',nt:'PCM Brass 62 - preset 62 de PCM Bank'},
+{id:191,bl:'B063',n:'',bn:'PCM Bank',bnum:1,fn:'Brass',cls:'PCM brass',nt:'PCM Brass 63 - preset 63 de PCM Bank'},
+{id:192,bl:'B064',n:'',bn:'PCM Bank',bnum:1,fn:'Piano',cls:'PCM piano',nt:'PCM Piano 64 - preset 64 de PCM Bank'},
+{id:193,bl:'B065',n:'Soprano Sax',bn:'PCM Bank',bnum:2,fn:'Brass',cls:'PCM brass',nt:'PCM Guitar 65 - preset 65 de PCM Bank'},
+{id:194,bl:'B066',n:'Alto Sax',bn:'PCM Bank',bnum:2,fn:'Brass',cls:'PCM brass',nt:'PCM Brass 66 - preset 66 de PCM Bank'},
+{id:195,bl:'B067',n:'Tenor Sax',bn:'PCM Bank',bnum:2,fn:'Strings',cls:'PCM strings',nt:'PCM Drums 67 - preset 67 de PCM Bank'},
+{id:196,bl:'B068',n:'',bn:'PCM Bank',bnum:2,fn:'Piano',cls:'PCM piano',nt:'PCM Strings 68 - preset 68 de PCM Bank'},
+{id:197,bl:'B069',n:'',bn:'PCM Bank',bnum:2,fn:'Brass',cls:'PCM brass',nt:'PCM Drums 69 - preset 69 de PCM Bank'},
+{id:198,bl:'B070',n:'Oboe',bn:'PCM Bank',bnum:2,fn:'Drums',cls:'PCM drums',nt:'PCM Guitar 70 - preset 70 de PCM Bank'},
+{id:199,bl:'B071',n:'Clarinet',bn:'PCM Bank',bnum:2,fn:'Piano',cls:'PCM piano',nt:'PCM Guitar 71 - preset 71 de PCM Bank'},
+{id:200,bl:'B072',n:'Flute',bn:'PCM Bank',bnum:2,fn:'Piano',cls:'PCM piano',nt:'PCM Drums 72 - preset 72 de PCM Bank'},
+{id:201,bl:'B073',n:'Pan Flute',bn:'PCM Bank',bnum:2,fn:'Drums',cls:'PCM drums',nt:'PCM Piano 73 - preset 73 de PCM Bank'},
+{id:202,bl:'B074',n:'',bn:'PCM Bank',bnum:2,fn:'Piano',cls:'PCM piano',nt:'PCM Brass 74 - preset 74 de PCM Bank'},
+{id:203,bl:'B075',n:'',bn:'PCM Bank',bnum:2,fn:'Drums',cls:'PCM drums',nt:'PCM Drums 75 - preset 75 de PCM Bank'},
+{id:204,bl:'B076',n:'',bn:'PCM Bank',bnum:2,fn:'Brass',cls:'PCM brass',nt:'PCM Strings 76 - preset 76 de PCM Bank'},
+{id:205,bl:'B077',n:'',bn:'PCM Bank',bnum:2,fn:'Guitar',cls:'PCM guitar',nt:'PCM Brass 77 - preset 77 de PCM Bank'},
+{id:206,bl:'B078',n:'',bn:'PCM Bank',bnum:2,fn:'Drums',cls:'PCM drums',nt:'PCM Strings 78 - preset 78 de PCM Bank'},
+{id:207,bl:'B079',n:'',bn:'PCM Bank',bnum:2,fn:'Brass',cls:'PCM brass',nt:'PCM Guitar 79 - preset 79 de PCM Bank'},
+{id:208,bl:'B080',n:'',bn:'PCM Bank',bnum:2,fn:'Strings',cls:'PCM strings',nt:'PCM Piano 80 - preset 80 de PCM Bank'},
+{id:209,bl:'B081',n:'Square Lead',bn:'PCM Bank',bnum:2,fn:'Brass',cls:'PCM brass',nt:'PCM Piano 81 - preset 81 de PCM Bank'},
+{id:210,bl:'B082',n:'Saw Lead',bn:'PCM Bank',bnum:2,fn:'Piano',cls:'PCM piano',nt:'PCM Strings 82 - preset 82 de PCM Bank'},
+{id:211,bl:'B083',n:'Pulse Lead',bn:'PCM Bank',bnum:2,fn:'Drums',cls:'PCM drums',nt:'PCM Guitar 83 - preset 83 de PCM Bank'},
+{id:212,bl:'B084',n:'Sync Lead',bn:'PCM Bank',bnum:2,fn:'Piano',cls:'PCM piano',nt:'PCM Drums 84 - preset 84 de PCM Bank'},
+{id:213,bl:'B085',n:'Formant Lead',bn:'PCM Bank',bnum:2,fn:'Brass',cls:'PCM brass',nt:'PCM Drums 85 - preset 85 de PCM Bank'},
+{id:214,bl:'B086',n:'Reso Lead',bn:'PCM Bank',bnum:2,fn:'Strings',cls:'PCM strings',nt:'PCM Brass 86 - preset 86 de PCM Bank'},
+{id:215,bl:'B087',n:'Additive Lead',bn:'PCM Bank',bnum:2,fn:'Strings',cls:'PCM strings',nt:'PCM Strings 87 - preset 87 de PCM Bank'},
+{id:216,bl:'B088',n:'Solo Lead',bn:'PCM Bank',bnum:2,fn:'Strings',cls:'PCM strings',nt:'PCM Strings 88 - preset 88 de PCM Bank'},
+{id:217,bl:'B089',n:'New Age Pad',bn:'PCM Bank',bnum:2,fn:'Piano',cls:'PCM piano',nt:'PCM Strings 89 - preset 89 de PCM Bank'},
+{id:218,bl:'B090',n:'Warm Pad',bn:'PCM Bank',bnum:2,fn:'Piano',cls:'PCM piano',nt:'PCM Strings 90 - preset 90 de PCM Bank'},
+{id:219,bl:'B091',n:'Poly Synth',bn:'PCM Bank',bnum:2,fn:'Guitar',cls:'PCM guitar',nt:'PCM Piano 91 - preset 91 de PCM Bank'},
+{id:220,bl:'B092',n:'Choir Pad',bn:'PCM Bank',bnum:2,fn:'Drums',cls:'PCM drums',nt:'PCM Guitar 92 - preset 92 de PCM Bank'},
+{id:221,bl:'B093',n:'Bowed Pad',bn:'PCM Bank',bnum:2,fn:'Strings',cls:'PCM strings',nt:'PCM Guitar 93 - preset 93 de PCM Bank'},
+{id:222,bl:'B094',n:'Metal Pad',bn:'PCM Bank',bnum:2,fn:'Drums',cls:'PCM drums',nt:'PCM Piano 94 - preset 94 de PCM Bank'},
+{id:223,bl:'B095',n:'Halo Pad',bn:'PCM Bank',bnum:2,fn:'Brass',cls:'PCM brass',nt:'PCM Piano 95 - preset 95 de PCM Bank'},
+{id:224,bl:'B096',n:'Sweep Pad',bn:'PCM Bank',bnum:2,fn:'Piano',cls:'PCM piano',nt:'PCM Strings 96 - preset 96 de PCM Bank'},
+{id:225,bl:'B097',n:'Aurora',bn:'PCM Bank',bnum:3,fn:'Piano',cls:'PCM piano',nt:'PCM Guitar 97 - preset 97 de PCM Bank'},
+{id:226,bl:'B098',n:'Glass Pad',bn:'PCM Bank',bnum:3,fn:'Guitar',cls:'PCM guitar',nt:'PCM Drums 98 - preset 98 de PCM Bank'},
+{id:227,bl:'B099',n:'Morphed Pad',bn:'PCM Bank',bnum:3,fn:'Strings',cls:'PCM strings',nt:'PCM Piano 99 - preset 99 de PCM Bank'},
+{id:228,bl:'B100',n:'Space Pad',bn:'PCM Bank',bnum:3,fn:'Guitar',cls:'PCM guitar',nt:'PCM Brass 100 - preset 100 de PCM Bank'},
+{id:229,bl:'B101',n:'Ether Voice',bn:'PCM Bank',bnum:3,fn:'Piano',cls:'PCM piano',nt:'PCM Strings 101 - preset 101 de PCM Bank'},
+{id:230,bl:'B102',n:'Solar Wind',bn:'PCM Bank',bnum:3,fn:'Strings',cls:'PCM strings',nt:'PCM Guitar 102 - preset 102 de PCM Bank'},
+{id:231,bl:'B103',n:'Galactic',bn:'PCM Bank',bnum:3,fn:'Guitar',cls:'PCM guitar',nt:'PCM Strings 103 - preset 103 de PCM Bank'},
+{id:232,bl:'B104',n:'',bn:'PCM Bank',bnum:3,fn:'Piano',cls:'PCM piano',nt:'PCM Drums 104 - preset 104 de PCM Bank'},
+{id:233,bl:'B105',n:'Sitar',bn:'PCM Bank',bnum:3,fn:'Brass',cls:'PCM brass',nt:'PCM Brass 105 - preset 105 de PCM Bank'},
+{id:234,bl:'B106',n:'',bn:'PCM Bank',bnum:3,fn:'Guitar',cls:'PCM guitar',nt:'PCM Guitar 106 - preset 106 de PCM Bank'},
+{id:235,bl:'B107',n:'',bn:'PCM Bank',bnum:3,fn:'Brass',cls:'PCM brass',nt:'PCM Guitar 107 - preset 107 de PCM Bank'},
+{id:236,bl:'B108',n:'',bn:'PCM Bank',bnum:3,fn:'Drums',cls:'PCM drums',nt:'PCM Guitar 108 - preset 108 de PCM Bank'},
+{id:237,bl:'B109',n:'',bn:'PCM Bank',bnum:3,fn:'Brass',cls:'PCM brass',nt:'PCM Strings 109 - preset 109 de PCM Bank'},
+{id:238,bl:'B110',n:'Kalimba',bn:'PCM Bank',bnum:3,fn:'Guitar',cls:'PCM guitar',nt:'PCM Piano 110 - preset 110 de PCM Bank'},
+{id:239,bl:'B111',n:'',bn:'PCM Bank',bnum:3,fn:'Piano',cls:'PCM piano',nt:'PCM Guitar 111 - preset 111 de PCM Bank'},
+{id:240,bl:'B112',n:'',bn:'PCM Bank',bnum:3,fn:'Drums',cls:'PCM drums',nt:'PCM Piano 112 - preset 112 de PCM Bank'},
+{id:241,bl:'B113',n:'',bn:'PCM Bank',bnum:3,fn:'Piano',cls:'PCM piano',nt:'PCM Brass 113 - preset 113 de PCM Bank'},
+{id:242,bl:'B114',n:'',bn:'PCM Bank',bnum:3,fn:'Guitar',cls:'PCM guitar',nt:'PCM Drums 114 - preset 114 de PCM Bank'},
+{id:243,bl:'B115',n:'Steel Drum',bn:'PCM Bank',bnum:3,fn:'Guitar',cls:'PCM guitar',nt:'PCM Guitar 115 - preset 115 de PCM Bank'},
+{id:244,bl:'B116',n:'',bn:'PCM Bank',bnum:3,fn:'Guitar',cls:'PCM guitar',nt:'PCM Strings 116 - preset 116 de PCM Bank'},
+{id:245,bl:'B117',n:'',bn:'PCM Bank',bnum:3,fn:'Brass',cls:'PCM brass',nt:'PCM Strings 117 - preset 117 de PCM Bank'},
+{id:246,bl:'B118',n:'',bn:'PCM Bank',bnum:3,fn:'Drums',cls:'PCM drums',nt:'PCM Drums 118 - preset 118 de PCM Bank'},
+{id:247,bl:'B119',n:'',bn:'PCM Bank',bnum:3,fn:'Brass',cls:'PCM brass',nt:'PCM Piano 119 - preset 119 de PCM Bank'},
+{id:248,bl:'B120',n:'Reverse Cym',bn:'PCM Bank',bnum:3,fn:'Strings',cls:'PCM strings',nt:'PCM Guitar 120 - preset 120 de PCM Bank'},
+{id:249,bl:'B121',n:'',bn:'PCM Bank',bnum:3,fn:'Drums',cls:'PCM drums',nt:'PCM Piano 121 - preset 121 de PCM Bank'},
+{id:250,bl:'B122',n:'',bn:'PCM Bank',bnum:3,fn:'Strings',cls:'PCM strings',nt:'PCM Piano 122 - preset 122 de PCM Bank'},
+{id:251,bl:'B123',n:'',bn:'PCM Bank',bnum:3,fn:'Strings',cls:'PCM strings',nt:'PCM Guitar 123 - preset 123 de PCM Bank'},
+{id:252,bl:'B124',n:'',bn:'PCM Bank',bnum:3,fn:'Drums',cls:'PCM drums',nt:'PCM Strings 124 - preset 124 de PCM Bank'},
+{id:253,bl:'B125',n:'Rave Lead',bn:'PCM Bank',bnum:3,fn:'Guitar',cls:'PCM guitar',nt:'PCM Drums 125 - preset 125 de PCM Bank'},
+{id:254,bl:'B126',n:'Acid Bass',bn:'PCM Bank',bnum:3,fn:'Piano',cls:'PCM piano',nt:'PCM Piano 126 - preset 126 de PCM Bank'},
+{id:255,bl:'B127',n:'Dream Pad',bn:'PCM Bank',bnum:3,fn:'Drums',cls:'PCM drums',nt:'PCM Brass 127 - preset 127 de PCM Bank'},
+{id:256,bl:'B128',n:'Final Synth',bn:'PCM Bank',bnum:3,fn:'Brass',cls:'PCM brass',nt:'PCM Guitar 128 - preset 128 de PCM Bank'},
+{id:257,bl:'C001',n:'Acoustic Grand Piano',bn:'GM Bank C (1-64)',bnum:0,fn:'Strings',cls:'GM strings',nt:'GM Lead 1 - preset 1 de General MIDI Bank'},
+{id:258,bl:'C002',n:'Bright Acoustic Piano',bn:'GM Bank C (1-64)',bnum:0,fn:'Pad',cls:'GM pad',nt:'GM Bass 2 - preset 2 de General MIDI Bank'},
+{id:259,bl:'C003',n:'Electric Grand Piano',bn:'GM Bank C (1-64)',bnum:0,fn:'Strings',cls:'GM strings',nt:'GM Synth Pad 3 - preset 3 de General MIDI Bank'},
+{id:260,bl:'C004',n:'Honky-tonk Piano',bn:'GM Bank C (1-64)',bnum:0,fn:'Bass',cls:'GM bass',nt:'GM Bright Piano 4 - preset 4 de General MIDI Bank'},
+{id:261,bl:'C005',n:'Electric Piano 1 (Rhodes style)',bn:'GM Bank C (1-64)',bnum:0,fn:'Bass',cls:'GM bass',nt:'GM Bright Piano 5 - preset 5 de General MIDI Bank'},
+{id:262,bl:'C006',n:'Electric Piano 2 (Chorused)',bn:'GM Bank C (1-64)',bnum:0,fn:'Pad',cls:'GM pad',nt:'GM Strings 1 6 - preset 6 de General MIDI Bank'},
+{id:263,bl:'C007',n:'Harpsichord',bn:'GM Bank C (1-64)',bnum:0,fn:'Piano',cls:'GM piano',nt:'GM Bright Piano 7 - preset 7 de General MIDI Bank'},
+{id:264,bl:'C008',n:'Clavi',bn:'GM Bank C (1-64)',bnum:0,fn:'Piano',cls:'GM piano',nt:'GM Grand Piano 8 - preset 8 de General MIDI Bank'},
+{id:265,bl:'C009',n:'Celesta',bn:'GM Bank C (1-64)',bnum:0,fn:'Strings',cls:'GM strings',nt:'GM Lead 9 - preset 9 de General MIDI Bank'},
+{id:266,bl:'C010',n:'Glockenspiel',bn:'GM Bank C (1-64)',bnum:0,fn:'Drums',cls:'GM drums',nt:'GM Standard Kit 10 - preset 10 de General MIDI Bank'},
+{id:267,bl:'C011',n:'Music Box',bn:'GM Bank C (1-64)',bnum:0,fn:'Bass',cls:'GM bass',nt:'GM Standard Kit 11 - preset 11 de General MIDI Bank'},
+{id:268,bl:'C012',n:'Vibraphone',bn:'GM Bank C (1-64)',bnum:0,fn:'Bass',cls:'GM bass',nt:'GM Lead 12 - preset 12 de General MIDI Bank'},
+{id:269,bl:'C013',n:'Marimba',bn:'GM Bank C (1-64)',bnum:0,fn:'Bass',cls:'GM bass',nt:'GM Power Kit 13 - preset 13 de General MIDI Bank'},
+{id:270,bl:'C014',n:'Xylophone',bn:'GM Bank C (1-64)',bnum:0,fn:'Bass',cls:'GM bass',nt:'GM Bright Piano 14 - preset 14 de General MIDI Bank'},
+{id:271,bl:'C015',n:'Tubular Bells',bn:'GM Bank C (1-64)',bnum:0,fn:'Pad',cls:'GM pad',nt:'GM Grand Piano 15 - preset 15 de General MIDI Bank'},
+{id:272,bl:'C016',n:'Dulcimer (Santur)',bn:'GM Bank C (1-64)',bnum:0,fn:'Strings',cls:'GM strings',nt:'GM Lead 16 - preset 16 de General MIDI Bank'},
+{id:273,bl:'C017',n:'Drawbar Organ',bn:'GM Bank C (1-64)',bnum:0,fn:'Bass',cls:'GM bass',nt:'GM Power Kit 17 - preset 17 de General MIDI Bank'},
+{id:274,bl:'C018',n:'Percussive Organ',bn:'GM Bank C (1-64)',bnum:0,fn:'Pad',cls:'GM pad',nt:'GM Grand Piano 18 - preset 18 de General MIDI Bank'},
+{id:275,bl:'C019',n:'Rock Organ',bn:'GM Bank C (1-64)',bnum:0,fn:'Strings',cls:'GM strings',nt:'GM Synth Pad 19 - preset 19 de General MIDI Bank'},
+{id:276,bl:'C020',n:'Church Organ',bn:'GM Bank C (1-64)',bnum:0,fn:'Bass',cls:'GM bass',nt:'GM Bright Piano 20 - preset 20 de General MIDI Bank'},
+{id:277,bl:'C021',n:'Reed Organ',bn:'GM Bank C (1-64)',bnum:0,fn:'Bass',cls:'GM bass',nt:'GM Strings 1 21 - preset 21 de General MIDI Bank'},
+{id:278,bl:'C022',n:'Accordion',bn:'GM Bank C (1-64)',bnum:0,fn:'Piano',cls:'GM piano',nt:'GM Power Kit 22 - preset 22 de General MIDI Bank'},
+{id:279,bl:'C023',n:'Harmonica',bn:'GM Bank C (1-64)',bnum:0,fn:'Drums',cls:'GM drums',nt:'GM Bass 23 - preset 23 de General MIDI Bank'},
+{id:280,bl:'C024',n:'Tango Accordion (Bandoneon)',bn:'GM Bank C (1-64)',bnum:0,fn:'Pad',cls:'GM pad',nt:'GM Bright Piano 24 - preset 24 de General MIDI Bank'},
+{id:281,bl:'C025',n:'Acoustic Guitar (nylon)',bn:'GM Bank C (1-64)',bnum:0,fn:'Bass',cls:'GM bass',nt:'GM Lead 25 - preset 25 de General MIDI Bank'},
+{id:282,bl:'C026',n:'Acoustic Guitar (steel)',bn:'GM Bank C (1-64)',bnum:0,fn:'Bass',cls:'GM bass',nt:'GM Lead 26 - preset 26 de General MIDI Bank'},
+{id:283,bl:'C027',n:'Electric Guitar (jazz)',bn:'GM Bank C (1-64)',bnum:0,fn:'Drums',cls:'GM drums',nt:'GM Standard Kit 27 - preset 27 de General MIDI Bank'},
+{id:284,bl:'C028',n:'Electric Guitar (clean)',bn:'GM Bank C (1-64)',bnum:0,fn:'Drums',cls:'GM drums',nt:'GM Lead 28 - preset 28 de General MIDI Bank'},
+{id:285,bl:'C029',n:'Electric Guitar (muted)',bn:'GM Bank C (1-64)',bnum:0,fn:'Piano',cls:'GM piano',nt:'GM Lead 29 - preset 29 de General MIDI Bank'},
+{id:286,bl:'C030',n:'Overdriven Guitar',bn:'GM Bank C (1-64)',bnum:0,fn:'Pad',cls:'GM pad',nt:'GM Bass 30 - preset 30 de General MIDI Bank'},
+{id:287,bl:'C031',n:'Distortion Guitar',bn:'GM Bank C (1-64)',bnum:0,fn:'Strings',cls:'GM strings',nt:'GM Bass 31 - preset 31 de General MIDI Bank'},
+{id:288,bl:'C032',n:'Guitar Harmonics',bn:'GM Bank C (1-64)',bnum:0,fn:'Piano',cls:'GM piano',nt:'GM Power Kit 32 - preset 32 de General MIDI Bank'},
+{id:289,bl:'C033',n:'Acoustic Bass',bn:'GM Bank C (1-64)',bnum:1,fn:'Drums',cls:'GM drums',nt:'GM Power Kit 33 - preset 33 de General MIDI Bank'},
+{id:290,bl:'C034',n:'Electric Bass (finger)',bn:'GM Bank C (1-64)',bnum:1,fn:'Strings',cls:'GM strings',nt:'GM Power Kit 34 - preset 34 de General MIDI Bank'},
+{id:291,bl:'C035',n:'Electric Bass (pick)',bn:'GM Bank C (1-64)',bnum:1,fn:'Strings',cls:'GM strings',nt:'GM Bright Piano 35 - preset 35 de General MIDI Bank'},
+{id:292,bl:'C036',n:'Fretless Bass',bn:'GM Bank C (1-64)',bnum:1,fn:'Drums',cls:'GM drums',nt:'GM Strings 1 36 - preset 36 de General MIDI Bank'},
+{id:293,bl:'C037',n:'Slap Bass 1',bn:'GM Bank C (1-64)',bnum:1,fn:'Piano',cls:'GM piano',nt:'GM Bright Piano 37 - preset 37 de General MIDI Bank'},
+{id:294,bl:'C038',n:'Slap Bass 2',bn:'GM Bank C (1-64)',bnum:1,fn:'Strings',cls:'GM strings',nt:'GM Standard Kit 38 - preset 38 de General MIDI Bank'},
+{id:295,bl:'C039',n:'Synth Bass 1',bn:'GM Bank C (1-64)',bnum:1,fn:'Bass',cls:'GM bass',nt:'GM Synth Pad 39 - preset 39 de General MIDI Bank'},
+{id:296,bl:'C040',n:'Synth Bass 2',bn:'GM Bank C (1-64)',bnum:1,fn:'Piano',cls:'GM piano',nt:'GM Grand Piano 40 - preset 40 de General MIDI Bank'},
+{id:297,bl:'C041',n:'Violin',bn:'GM Bank C (1-64)',bnum:1,fn:'Drums',cls:'GM drums',nt:'GM Strings 1 41 - preset 41 de General MIDI Bank'},
+{id:298,bl:'C042',n:'Viola',bn:'GM Bank C (1-64)',bnum:1,fn:'Bass',cls:'GM bass',nt:'GM Synth Pad 42 - preset 42 de General MIDI Bank'},
+{id:299,bl:'C043',n:'Cello',bn:'GM Bank C (1-64)',bnum:1,fn:'Pad',cls:'GM pad',nt:'GM Bright Piano 43 - preset 43 de General MIDI Bank'},
+{id:300,bl:'C044',n:'Contrabass',bn:'GM Bank C (1-64)',bnum:1,fn:'Drums',cls:'GM drums',nt:'GM Synth Pad 44 - preset 44 de General MIDI Bank'},
+{id:301,bl:'C045',n:'Tremolo Strings',bn:'GM Bank C (1-64)',bnum:1,fn:'Piano',cls:'GM piano',nt:'GM Bass 45 - preset 45 de General MIDI Bank'},
+{id:302,bl:'C046',n:'Pizzicato Strings',bn:'GM Bank C (1-64)',bnum:1,fn:'Pad',cls:'GM pad',nt:'GM Grand Piano 46 - preset 46 de General MIDI Bank'},
+{id:303,bl:'C047',n:'Orchestral Harp',bn:'GM Bank C (1-64)',bnum:1,fn:'Pad',cls:'GM pad',nt:'GM Bass 47 - preset 47 de General MIDI Bank'},
+{id:304,bl:'C048',n:'Timpani',bn:'GM Bank C (1-64)',bnum:1,fn:'Bass',cls:'GM bass',nt:'GM Bright Piano 48 - preset 48 de General MIDI Bank'},
+{id:305,bl:'C049',n:'String Ensemble 1',bn:'GM Bank C (1-64)',bnum:1,fn:'Pad',cls:'GM pad',nt:'GM Power Kit 49 - preset 49 de General MIDI Bank'},
+{id:306,bl:'C050',n:'String Ensemble 2',bn:'GM Bank C (1-64)',bnum:1,fn:'Strings',cls:'GM strings',nt:'GM Strings 1 50 - preset 50 de General MIDI Bank'},
+{id:307,bl:'C051',n:'SynthStrings 1',bn:'GM Bank C (1-64)',bnum:1,fn:'Strings',cls:'GM strings',nt:'GM Strings 1 51 - preset 51 de General MIDI Bank'},
+{id:308,bl:'C052',n:'SynthStrings 2',bn:'GM Bank C (1-64)',bnum:1,fn:'Strings',cls:'GM strings',nt:'GM Strings 1 52 - preset 52 de General MIDI Bank'},
+{id:309,bl:'C053',n:'Choir Aahs',bn:'GM Bank C (1-64)',bnum:1,fn:'Strings',cls:'GM strings',nt:'GM Lead 53 - preset 53 de General MIDI Bank'},
+{id:310,bl:'C054',n:'Voice Oohs',bn:'GM Bank C (1-64)',bnum:1,fn:'Drums',cls:'GM drums',nt:'GM Bass 54 - preset 54 de General MIDI Bank'},
+{id:311,bl:'C055',n:'Synth Voice',bn:'GM Bank C (1-64)',bnum:1,fn:'Piano',cls:'GM piano',nt:'GM Power Kit 55 - preset 55 de General MIDI Bank'},
+{id:312,bl:'C056',n:'Orchestra Hit',bn:'GM Bank C (1-64)',bnum:1,fn:'Strings',cls:'GM strings',nt:'GM Strings 1 56 - preset 56 de General MIDI Bank'},
+{id:313,bl:'C057',n:'Trumpet',bn:'GM Bank C (1-64)',bnum:1,fn:'Piano',cls:'GM piano',nt:'GM Bass 57 - preset 57 de General MIDI Bank'},
+{id:314,bl:'C058',n:'Trombone',bn:'GM Bank C (1-64)',bnum:1,fn:'Strings',cls:'GM strings',nt:'GM Standard Kit 58 - preset 58 de General MIDI Bank'},
+{id:315,bl:'C059',n:'Tuba',bn:'GM Bank C (1-64)',bnum:1,fn:'Piano',cls:'GM piano',nt:'GM Strings 1 59 - preset 59 de General MIDI Bank'},
+{id:316,bl:'C060',n:'Muted Trumpet',bn:'GM Bank C (1-64)',bnum:1,fn:'Bass',cls:'GM bass',nt:'GM Standard Kit 60 - preset 60 de General MIDI Bank'},
+{id:317,bl:'C061',n:'French Horn',bn:'GM Bank C (1-64)',bnum:1,fn:'Drums',cls:'GM drums',nt:'GM Lead 61 - preset 61 de General MIDI Bank'},
+{id:318,bl:'C062',n:'Brass Section',bn:'GM Bank C (1-64)',bnum:1,fn:'Strings',cls:'GM strings',nt:'GM Lead 62 - preset 62 de General MIDI Bank'},
+{id:319,bl:'C063',n:'SynthBrass 1',bn:'GM Bank C (1-64)',bnum:1,fn:'Piano',cls:'GM piano',nt:'GM Power Kit 63 - preset 63 de General MIDI Bank'},
+{id:320,bl:'C064',n:'SynthBrass 2',bn:'GM Bank C (1-64)',bnum:1,fn:'Pad',cls:'GM pad',nt:'GM Standard Kit 64 - preset 64 de General MIDI Bank'},
+{id:321,bl:'D065',n:'Soprano Sax',bn:'GM Bank D (65-128)',bnum:2,fn:'Piano',cls:'GM piano',nt:'GM Synth Pad 65 - preset 65 de General MIDI Bank'},
+{id:322,bl:'D066',n:'Alto Sax',bn:'GM Bank D (65-128)',bnum:2,fn:'Bass',cls:'GM bass',nt:'GM Synth Pad 66 - preset 66 de General MIDI Bank'},
+{id:323,bl:'D067',n:'Tenor Sax',bn:'GM Bank D (65-128)',bnum:2,fn:'Strings',cls:'GM strings',nt:'GM Synth Pad 67 - preset 67 de General MIDI Bank'},
+{id:324,bl:'D068',n:'Baritone Sax',bn:'GM Bank D (65-128)',bnum:2,fn:'Pad',cls:'GM pad',nt:'GM Grand Piano 68 - preset 68 de General MIDI Bank'},
+{id:325,bl:'D069',n:'Oboe',bn:'GM Bank D (65-128)',bnum:2,fn:'Bass',cls:'GM bass',nt:'GM Power Kit 69 - preset 69 de General MIDI Bank'},
+{id:326,bl:'D070',n:'English Horn',bn:'GM Bank D (65-128)',bnum:2,fn:'Pad',cls:'GM pad',nt:'GM Synth Pad 70 - preset 70 de General MIDI Bank'},
+{id:327,bl:'D071',n:'Bassoon',bn:'GM Bank D (65-128)',bnum:2,fn:'Strings',cls:'GM strings',nt:'GM Strings 1 71 - preset 71 de General MIDI Bank'},
+{id:328,bl:'D072',n:'Clarinet',bn:'GM Bank D (65-128)',bnum:2,fn:'Pad',cls:'GM pad',nt:'GM Strings 1 72 - preset 72 de General MIDI Bank'},
+{id:329,bl:'D073',n:'Piccolo',bn:'GM Bank D (65-128)',bnum:2,fn:'Bass',cls:'GM bass',nt:'GM Lead 73 - preset 73 de General MIDI Bank'},
+{id:330,bl:'D074',n:'Flute',bn:'GM Bank D (65-128)',bnum:2,fn:'Strings',cls:'GM strings',nt:'GM Bright Piano 74 - preset 74 de General MIDI Bank'},
+{id:331,bl:'D075',n:'Recorder',bn:'GM Bank D (65-128)',bnum:2,fn:'Strings',cls:'GM strings',nt:'GM Bass 75 - preset 75 de General MIDI Bank'},
+{id:332,bl:'D076',n:'Pan Flute',bn:'GM Bank D (65-128)',bnum:2,fn:'Bass',cls:'GM bass',nt:'GM Strings 1 76 - preset 76 de General MIDI Bank'},
+{id:333,bl:'D077',n:'Blown Bottle',bn:'GM Bank D (65-128)',bnum:2,fn:'Strings',cls:'GM strings',nt:'GM Bright Piano 77 - preset 77 de General MIDI Bank'},
+{id:334,bl:'D078',n:'Shakuhachi',bn:'GM Bank D (65-128)',bnum:2,fn:'Strings',cls:'GM strings',nt:'GM Bright Piano 78 - preset 78 de General MIDI Bank'},
+{id:335,bl:'D079',n:'Whistle',bn:'GM Bank D (65-128)',bnum:2,fn:'Bass',cls:'GM bass',nt:'GM Bass 79 - preset 79 de General MIDI Bank'},
+{id:336,bl:'D080',n:'Ocarina',bn:'GM Bank D (65-128)',bnum:2,fn:'Strings',cls:'GM strings',nt:'GM Lead 80 - preset 80 de General MIDI Bank'},
+{id:337,bl:'D081',n:'Lead 1 (square)',bn:'GM Bank D (65-128)',bnum:2,fn:'Piano',cls:'GM piano',nt:'GM Standard Kit 81 - preset 81 de General MIDI Bank'},
+{id:338,bl:'D082',n:'Lead 2 (sawtooth)',bn:'GM Bank D (65-128)',bnum:2,fn:'Pad',cls:'GM pad',nt:'GM Strings 1 82 - preset 82 de General MIDI Bank'},
+{id:339,bl:'D083',n:'Lead 3 (calliope)',bn:'GM Bank D (65-128)',bnum:2,fn:'Pad',cls:'GM pad',nt:'GM Bright Piano 83 - preset 83 de General MIDI Bank'},
+{id:340,bl:'D084',n:'Lead 4 (chiff)',bn:'GM Bank D (65-128)',bnum:2,fn:'Piano',cls:'GM piano',nt:'GM Lead 84 - preset 84 de General MIDI Bank'},
+{id:341,bl:'D085',n:'Lead 5 (charang)',bn:'GM Bank D (65-128)',bnum:2,fn:'Piano',cls:'GM piano',nt:'GM Synth Pad 85 - preset 85 de General MIDI Bank'},
+{id:342,bl:'D086',n:'Lead 6 (voice)',bn:'GM Bank D (65-128)',bnum:2,fn:'Pad',cls:'GM pad',nt:'GM Power Kit 86 - preset 86 de General MIDI Bank'},
+{id:343,bl:'D087',n:'Lead 7 (fifths)',bn:'GM Bank D (65-128)',bnum:2,fn:'Pad',cls:'GM pad',nt:'GM Bass 87 - preset 87 de General MIDI Bank'},
+{id:344,bl:'D088',n:'Lead 8 (bass + lead)',bn:'GM Bank D (65-128)',bnum:2,fn:'Drums',cls:'GM drums',nt:'GM Bass 88 - preset 88 de General MIDI Bank'},
+{id:345,bl:'D089',n:'Pad 1 (new age)',bn:'GM Bank D (65-128)',bnum:2,fn:'Pad',cls:'GM pad',nt:'GM Grand Piano 89 - preset 89 de General MIDI Bank'},
+{id:346,bl:'D090',n:'Pad 2 (warm)',bn:'GM Bank D (65-128)',bnum:2,fn:'Pad',cls:'GM pad',nt:'GM Bass 90 - preset 90 de General MIDI Bank'},
+{id:347,bl:'D091',n:'Pad 3 (polysynth)',bn:'GM Bank D (65-128)',bnum:2,fn:'Drums',cls:'GM drums',nt:'GM Strings 1 91 - preset 91 de General MIDI Bank'},
+{id:348,bl:'D092',n:'Pad 4 (choir)',bn:'GM Bank D (65-128)',bnum:2,fn:'Bass',cls:'GM bass',nt:'GM Bright Piano 92 - preset 92 de General MIDI Bank'},
+{id:349,bl:'D093',n:'Pad 5 (bowed)',bn:'GM Bank D (65-128)',bnum:2,fn:'Piano',cls:'GM piano',nt:'GM Synth Pad 93 - preset 93 de General MIDI Bank'},
+{id:350,bl:'D094',n:'Pad 6 (metallic)',bn:'GM Bank D (65-128)',bnum:2,fn:'Piano',cls:'GM piano',nt:'GM Bright Piano 94 - preset 94 de General MIDI Bank'},
+{id:351,bl:'D095',n:'Pad 7 (halo)',bn:'GM Bank D (65-128)',bnum:2,fn:'Bass',cls:'GM bass',nt:'GM Standard Kit 95 - preset 95 de General MIDI Bank'},
+{id:352,bl:'D096',n:'Pad 8 (sweep)',bn:'GM Bank D (65-128)',bnum:2,fn:'Bass',cls:'GM bass',nt:'GM Standard Kit 96 - preset 96 de General MIDI Bank'},
+{id:353,bl:'D097',n:'SFX 1 (rain)',bn:'GM Bank D (65-128)',bnum:3,fn:'Strings',cls:'GM strings',nt:'GM Strings 1 97 - preset 97 de General MIDI Bank'},
+{id:354,bl:'D098',n:'SFX 2 (soundtrack)',bn:'GM Bank D (65-128)',bnum:3,fn:'Pad',cls:'GM pad',nt:'GM Bass 98 - preset 98 de General MIDI Bank'},
+{id:355,bl:'D099',n:'SFX 3 (crystal)',bn:'GM Bank D (65-128)',bnum:3,fn:'Piano',cls:'GM piano',nt:'GM Lead 99 - preset 99 de General MIDI Bank'},
+{id:356,bl:'D100',n:'SFX 4 (atmosphere)',bn:'GM Bank D (65-128)',bnum:3,fn:'Pad',cls:'GM pad',nt:'GM Standard Kit 100 - preset 100 de General MIDI Bank'},
+{id:357,bl:'D101',n:'SFX 5 (brightness)',bn:'GM Bank D (65-128)',bnum:3,fn:'Pad',cls:'GM pad',nt:'GM Grand Piano 101 - preset 101 de General MIDI Bank'},
+{id:358,bl:'D102',n:'SFX 6 (goblins)',bn:'GM Bank D (65-128)',bnum:3,fn:'Strings',cls:'GM strings',nt:'GM Grand Piano 102 - preset 102 de General MIDI Bank'},
+{id:359,bl:'D103',n:'SFX 7 (echoes)',bn:'GM Bank D (65-128)',bnum:3,fn:'Drums',cls:'GM drums',nt:'GM Standard Kit 103 - preset 103 de General MIDI Bank'},
+{id:360,bl:'D104',n:'SFX 8 (sci-fi)',bn:'GM Bank D (65-128)',bnum:3,fn:'Drums',cls:'GM drums',nt:'GM Bright Piano 104 - preset 104 de General MIDI Bank'},
+{id:361,bl:'D105',n:'Sitar',bn:'GM Bank D (65-128)',bnum:3,fn:'Pad',cls:'GM pad',nt:'GM Power Kit 105 - preset 105 de General MIDI Bank'},
+{id:362,bl:'D106',n:'Banjo',bn:'GM Bank D (65-128)',bnum:3,fn:'Bass',cls:'GM bass',nt:'GM Standard Kit 106 - preset 106 de General MIDI Bank'},
+{id:363,bl:'D107',n:'Shamisen',bn:'GM Bank D (65-128)',bnum:3,fn:'Drums',cls:'GM drums',nt:'GM Bright Piano 107 - preset 107 de General MIDI Bank'},
+{id:364,bl:'D108',n:'Koto',bn:'GM Bank D (65-128)',bnum:3,fn:'Bass',cls:'GM bass',nt:'GM Synth Pad 108 - preset 108 de General MIDI Bank'},
+{id:365,bl:'D109',n:'Kalimba',bn:'GM Bank D (65-128)',bnum:3,fn:'Strings',cls:'GM strings',nt:'GM Grand Piano 109 - preset 109 de General MIDI Bank'},
+{id:366,bl:'D110',n:'Bag pipe',bn:'GM Bank D (65-128)',bnum:3,fn:'Strings',cls:'GM strings',nt:'GM Standard Kit 110 - preset 110 de General MIDI Bank'},
+{id:367,bl:'D111',n:'Fiddle',bn:'GM Bank D (65-128)',bnum:3,fn:'Bass',cls:'GM bass',nt:'GM Strings 1 111 - preset 111 de General MIDI Bank'},
+{id:368,bl:'D112',n:'Shanai',bn:'GM Bank D (65-128)',bnum:3,fn:'Strings',cls:'GM strings',nt:'GM Power Kit 112 - preset 112 de General MIDI Bank'},
+{id:369,bl:'D113',n:'Tinkle Bell',bn:'GM Bank D (65-128)',bnum:3,fn:'Bass',cls:'GM bass',nt:'GM Bright Piano 113 - preset 113 de General MIDI Bank'},
+{id:370,bl:'D114',n:'Agogo',bn:'GM Bank D (65-128)',bnum:3,fn:'Strings',cls:'GM strings',nt:'GM Strings 1 114 - preset 114 de General MIDI Bank'},
+{id:371,bl:'D115',n:'Steel Drums',bn:'GM Bank D (65-128)',bnum:3,fn:'Strings',cls:'GM strings',nt:'GM Strings 1 115 - preset 115 de General MIDI Bank'},
+{id:372,bl:'D116',n:'Woodblock',bn:'GM Bank D (65-128)',bnum:3,fn:'Bass',cls:'GM bass',nt:'GM Standard Kit 116 - preset 116 de General MIDI Bank'},
+{id:373,bl:'D117',n:'Taiko Drum',bn:'GM Bank D (65-128)',bnum:3,fn:'Pad',cls:'GM pad',nt:'GM Synth Pad 117 - preset 117 de General MIDI Bank'},
+{id:374,bl:'D118',n:'Melodic Tom',bn:'GM Bank D (65-128)',bnum:3,fn:'Piano',cls:'GM piano',nt:'GM Bright Piano 118 - preset 118 de General MIDI Bank'},
+{id:375,bl:'D119',n:'Synth Drum',bn:'GM Bank D (65-128)',bnum:3,fn:'Bass',cls:'GM bass',nt:'GM Bass 119 - preset 119 de General MIDI Bank'},
+{id:376,bl:'D120',n:'Reverse Cymbal',bn:'GM Bank D (65-128)',bnum:3,fn:'Piano',cls:'GM piano',nt:'GM Lead 120 - preset 120 de General MIDI Bank'},
+{id:377,bl:'D121',n:'Guitar Fret Noise',bn:'GM Bank D (65-128)',bnum:3,fn:'Bass',cls:'GM bass',nt:'GM Lead 121 - preset 121 de General MIDI Bank'},
+{id:378,bl:'D122',n:'Breath Noise',bn:'GM Bank D (65-128)',bnum:3,fn:'Bass',cls:'GM bass',nt:'GM Synth Pad 122 - preset 122 de General MIDI Bank'},
+{id:379,bl:'D123',n:'Seashore',bn:'GM Bank D (65-128)',bnum:3,fn:'Piano',cls:'GM piano',nt:'GM Synth Pad 123 - preset 123 de General MIDI Bank'},
+{id:380,bl:'D124',n:'Bird Tweet',bn:'GM Bank D (65-128)',bnum:3,fn:'Strings',cls:'GM strings',nt:'GM Lead 124 - preset 124 de General MIDI Bank'},
+{id:381,bl:'D125',n:'Telephone Ring',bn:'GM Bank D (65-128)',bnum:3,fn:'Pad',cls:'GM pad',nt:'GM Bright Piano 125 - preset 125 de General MIDI Bank'},
+{id:382,bl:'D126',n:'Helicopter',bn:'GM Bank D (65-128)',bnum:3,fn:'Drums',cls:'GM drums',nt:'GM Power Kit 126 - preset 126 de General MIDI Bank'},
+{id:383,bl:'D127',n:'Applause',bn:'GM Bank D (65-128)',bnum:3,fn:'Drums',cls:'GM drums',nt:'GM Strings 1 127 - preset 127 de General MIDI Bank'},
+{id:384,bl:'D128',n:'Gunshot',bn:'GM Bank D (65-128)',bnum:3,fn:'Strings',cls:'GM strings',nt:'GM Synth Pad 128 - preset 128 de General MIDI Bank'},
+{id:385,bl:'E001',n:'Ozzilla',bn:'ME-1 Bank E',bnum:0,fn:'Strings',cls:'ME1 strings',nt:'ME1 Expanded Piano 1 - preset 1 de ME-1 Bank E'},
+{id:386,bl:'E002',n:'Ozzilla 2',bn:'ME-1 Bank E',bnum:0,fn:'Perc',cls:'ME1 perc',nt:'ME1 Expanded Piano 2 - preset 2 de ME-1 Bank E'},
+{id:387,bl:'E003',n:'Rez-A-Tron',bn:'ME-1 Bank E',bnum:0,fn:'Piano',cls:'ME1 piano',nt:'ME1 Expanded Piano 3 - preset 3 de ME-1 Bank E'},
+{id:388,bl:'E004',n:'Alien Hive',bn:'ME-1 Bank E',bnum:0,fn:'Piano',cls:'ME1 piano',nt:'ME1 Orch Strings 4 - preset 4 de ME-1 Bank E'},
+{id:389,bl:'E005',n:'Bio-Hazard',bn:'ME-1 Bank E',bnum:0,fn:'Choir',cls:'ME1 choir',nt:'ME1 Orch Strings 5 - preset 5 de ME-1 Bank E'},
+{id:390,bl:'E006',n:'Cyber-Drone',bn:'ME-1 Bank E',bnum:0,fn:'Pad',cls:'ME1 pad',nt:'ME1 Choir 6 - preset 6 de ME-1 Bank E'},
+{id:391,bl:'E007',n:'Deep Morph',bn:'ME-1 Bank E',bnum:0,fn:'Piano',cls:'ME1 piano',nt:'ME1 Expanded Piano 7 - preset 7 de ME-1 Bank E'},
+{id:392,bl:'E008',n:'Ethereal 1',bn:'ME-1 Bank E',bnum:0,fn:'Pad',cls:'ME1 pad',nt:'ME1 Fat Pad 8 - preset 8 de ME-1 Bank E'},
+{id:393,bl:'E009',n:'Ethereal 2',bn:'ME-1 Bank E',bnum:0,fn:'Choir',cls:'ME1 choir',nt:'ME1 Expanded Piano 9 - preset 9 de ME-1 Bank E'},
+{id:394,bl:'E010',n:'Filter-Sweeper',bn:'ME-1 Bank E',bnum:0,fn:'Pad',cls:'ME1 pad',nt:'ME1 Orch Strings 10 - preset 10 de ME-1 Bank E'},
+{id:395,bl:'E011',n:'Glass-Morph',bn:'ME-1 Bank E',bnum:0,fn:'Strings',cls:'ME1 strings',nt:'ME1 Fat Pad 11 - preset 11 de ME-1 Bank E'},
+{id:396,bl:'E012',n:'Harmonic-Bass',bn:'ME-1 Bank E',bnum:0,fn:'Perc',cls:'ME1 perc',nt:'ME1 Choir 12 - preset 12 de ME-1 Bank E'},
+{id:397,bl:'E013',n:'Industrial-1',bn:'ME-1 Bank E',bnum:0,fn:'Perc',cls:'ME1 perc',nt:'ME1 World Perc 13 - preset 13 de ME-1 Bank E'},
+{id:398,bl:'E014',n:'Jupiter-8000',bn:'ME-1 Bank E',bnum:0,fn:'Pad',cls:'ME1 pad',nt:'ME1 Choir 14 - preset 14 de ME-1 Bank E'},
+{id:399,bl:'E015',n:'K-Additive-1',bn:'ME-1 Bank E',bnum:0,fn:'Strings',cls:'ME1 strings',nt:'ME1 Orch Strings 15 - preset 15 de ME-1 Bank E'},
+{id:400,bl:'E016',n:'Liquid-Synth',bn:'ME-1 Bank E',bnum:0,fn:'Strings',cls:'ME1 strings',nt:'ME1 Orch Strings 16 - preset 16 de ME-1 Bank E'},
+{id:401,bl:'E017',n:'Metal-Morph',bn:'ME-1 Bank E',bnum:0,fn:'Strings',cls:'ME1 strings',nt:'ME1 Choir 17 - preset 17 de ME-1 Bank E'},
+{id:402,bl:'E018',n:'Neo-Classic',bn:'ME-1 Bank E',bnum:0,fn:'Strings',cls:'ME1 strings',nt:'ME1 Choir 18 - preset 18 de ME-1 Bank E'},
+{id:403,bl:'E019',n:'Organic-Pad',bn:'ME-1 Bank E',bnum:0,fn:'Pad',cls:'ME1 pad',nt:'ME1 World Perc 19 - preset 19 de ME-1 Bank E'},
+{id:404,bl:'E020',n:'Pulse-Width-Mod',bn:'ME-1 Bank E',bnum:0,fn:'Choir',cls:'ME1 choir',nt:'ME1 Orch Strings 20 - preset 20 de ME-1 Bank E'},
+{id:405,bl:'E021',n:'Quicksilver',bn:'ME-1 Bank E',bnum:0,fn:'Pad',cls:'ME1 pad',nt:'ME1 Orch Strings 21 - preset 21 de ME-1 Bank E'},
+{id:406,bl:'E022',n:'Reso-Formant',bn:'ME-1 Bank E',bnum:0,fn:'Choir',cls:'ME1 choir',nt:'ME1 World Perc 22 - preset 22 de ME-1 Bank E'},
+{id:407,bl:'E023',n:'Spectral-X',bn:'ME-1 Bank E',bnum:0,fn:'Pad',cls:'ME1 pad',nt:'ME1 Orch Strings 23 - preset 23 de ME-1 Bank E'},
+{id:408,bl:'E024',n:'Techno-Adit',bn:'ME-1 Bank E',bnum:0,fn:'Perc',cls:'ME1 perc',nt:'ME1 Expanded Piano 24 - preset 24 de ME-1 Bank E'},
+{id:409,bl:'E025',n:'Ultra-Rez',bn:'ME-1 Bank E',bnum:0,fn:'Choir',cls:'ME1 choir',nt:'ME1 Orch Strings 25 - preset 25 de ME-1 Bank E'},
+{id:410,bl:'E026',n:'Voice-Mod-1',bn:'ME-1 Bank E',bnum:0,fn:'Choir',cls:'ME1 choir',nt:'ME1 World Perc 26 - preset 26 de ME-1 Bank E'},
+{id:411,bl:'E027',n:'Wave-Runner',bn:'ME-1 Bank E',bnum:0,fn:'Strings',cls:'ME1 strings',nt:'ME1 Orch Strings 27 - preset 27 de ME-1 Bank E'},
+{id:412,bl:'E028',n:'X-Treme-Pad',bn:'ME-1 Bank E',bnum:0,fn:'Piano',cls:'ME1 piano',nt:'ME1 Fat Pad 28 - preset 28 de ME-1 Bank E'},
+{id:413,bl:'E029',n:'Y-Not-Synth',bn:'ME-1 Bank E',bnum:0,fn:'Strings',cls:'ME1 strings',nt:'ME1 World Perc 29 - preset 29 de ME-1 Bank E'},
+{id:414,bl:'E030',n:'Zen-Master',bn:'ME-1 Bank E',bnum:0,fn:'Perc',cls:'ME1 perc',nt:'ME1 Choir 30 - preset 30 de ME-1 Bank E'},
+{id:415,bl:'E031',n:'Additive Pulse',bn:'ME-1 Bank E',bnum:0,fn:'Piano',cls:'ME1 piano',nt:'ME1 Choir 31 - preset 31 de ME-1 Bank E'},
+{id:416,bl:'E032',n:'Formant Vox 1',bn:'ME-1 Bank E',bnum:0,fn:'Pad',cls:'ME1 pad',nt:'ME1 Fat Pad 32 - preset 32 de ME-1 Bank E'},
+{id:417,bl:'E033',n:'Formant Vox 2',bn:'ME-1 Bank E',bnum:1,fn:'Strings',cls:'ME1 strings',nt:'ME1 Choir 33 - preset 33 de ME-1 Bank E'},
+{id:418,bl:'E034',n:'Morphing Bells',bn:'ME-1 Bank E',bnum:1,fn:'Strings',cls:'ME1 strings',nt:'ME1 World Perc 34 - preset 34 de ME-1 Bank E'},
+{id:419,bl:'E035',n:'Reso-Sweep-L',bn:'ME-1 Bank E',bnum:1,fn:'Piano',cls:'ME1 piano',nt:'ME1 Choir 35 - preset 35 de ME-1 Bank E'},
+{id:420,bl:'E036',n:'Solar-Flare',bn:'ME-1 Bank E',bnum:1,fn:'Choir',cls:'ME1 choir',nt:'ME1 Fat Pad 36 - preset 36 de ME-1 Bank E'},
+{id:421,bl:'E037',n:'Space-Texture',bn:'ME-1 Bank E',bnum:1,fn:'Pad',cls:'ME1 pad',nt:'ME1 Orch Strings 37 - preset 37 de ME-1 Bank E'},
+{id:422,bl:'E038',n:'Vowel-Synth',bn:'ME-1 Bank E',bnum:1,fn:'Piano',cls:'ME1 piano',nt:'ME1 Orch Strings 38 - preset 38 de ME-1 Bank E'},
+{id:423,bl:'E039',n:'Harmonic-EP',bn:'ME-1 Bank E',bnum:1,fn:'Choir',cls:'ME1 choir',nt:'ME1 Fat Pad 39 - preset 39 de ME-1 Bank E'},
+{id:424,bl:'E040',n:'Crystal-Ice',bn:'ME-1 Bank E',bnum:1,fn:'Perc',cls:'ME1 perc',nt:'ME1 Expanded Piano 40 - preset 40 de ME-1 Bank E'},
+{id:425,bl:'E041',n:'Rave-Lead 1',bn:'ME-1 Bank E',bnum:1,fn:'Piano',cls:'ME1 piano',nt:'ME1 Choir 41 - preset 41 de ME-1 Bank E'},
+{id:426,bl:'E042',n:'Rave-Lead 2',bn:'ME-1 Bank E',bnum:1,fn:'Choir',cls:'ME1 choir',nt:'ME1 Orch Strings 42 - preset 42 de ME-1 Bank E'},
+{id:427,bl:'E043',n:'Acid-Bass 3',bn:'ME-1 Bank E',bnum:1,fn:'Pad',cls:'ME1 pad',nt:'ME1 Choir 43 - preset 43 de ME-1 Bank E'},
+{id:428,bl:'E044',n:'Sub-Bass 4',bn:'ME-1 Bank E',bnum:1,fn:'Pad',cls:'ME1 pad',nt:'ME1 Choir 44 - preset 44 de ME-1 Bank E'},
+{id:429,bl:'E045',n:'Hard-Sync',bn:'ME-1 Bank E',bnum:1,fn:'Choir',cls:'ME1 choir',nt:'ME1 Fat Pad 45 - preset 45 de ME-1 Bank E'},
+{id:430,bl:'E046',n:'Metal-Attack',bn:'ME-1 Bank E',bnum:1,fn:'Piano',cls:'ME1 piano',nt:'ME1 Fat Pad 46 - preset 46 de ME-1 Bank E'},
+{id:431,bl:'E047',n:'Glitch-Pad',bn:'ME-1 Bank E',bnum:1,fn:'Choir',cls:'ME1 choir',nt:'ME1 Expanded Piano 47 - preset 47 de ME-1 Bank E'},
+{id:432,bl:'E048',n:'Noise-Hit',bn:'ME-1 Bank E',bnum:1,fn:'Piano',cls:'ME1 piano',nt:'ME1 Choir 48 - preset 48 de ME-1 Bank E'},
+{id:433,bl:'E049',n:'Dream-Pad 3',bn:'ME-1 Bank E',bnum:1,fn:'Choir',cls:'ME1 choir',nt:'ME1 Choir 49 - preset 49 de ME-1 Bank E'},
+{id:434,bl:'E050',n:'Final-Synth 3',bn:'ME-1 Bank E',bnum:1,fn:'Strings',cls:'ME1 strings',nt:'ME1 Choir 50 - preset 50 de ME-1 Bank E'},
+{id:435,bl:'E051',n:'',bn:'ME-1 Bank E',bnum:1,fn:'Strings',cls:'ME1 strings',nt:'ME1 World Perc 51 - preset 51 de ME-1 Bank E'},
+{id:436,bl:'E052',n:'',bn:'ME-1 Bank E',bnum:1,fn:'Perc',cls:'ME1 perc',nt:'ME1 World Perc 52 - preset 52 de ME-1 Bank E'},
+{id:437,bl:'E053',n:'',bn:'ME-1 Bank E',bnum:1,fn:'Piano',cls:'ME1 piano',nt:'ME1 Choir 53 - preset 53 de ME-1 Bank E'},
+{id:438,bl:'E054',n:'',bn:'ME-1 Bank E',bnum:1,fn:'Pad',cls:'ME1 pad',nt:'ME1 Fat Pad 54 - preset 54 de ME-1 Bank E'},
+{id:439,bl:'E055',n:'',bn:'ME-1 Bank E',bnum:1,fn:'Piano',cls:'ME1 piano',nt:'ME1 World Perc 55 - preset 55 de ME-1 Bank E'},
+{id:440,bl:'E056',n:'',bn:'ME-1 Bank E',bnum:1,fn:'Pad',cls:'ME1 pad',nt:'ME1 Orch Strings 56 - preset 56 de ME-1 Bank E'},
+{id:441,bl:'E057',n:'',bn:'ME-1 Bank E',bnum:1,fn:'Pad',cls:'ME1 pad',nt:'ME1 World Perc 57 - preset 57 de ME-1 Bank E'},
+{id:442,bl:'E058',n:'',bn:'ME-1 Bank E',bnum:1,fn:'Perc',cls:'ME1 perc',nt:'ME1 World Perc 58 - preset 58 de ME-1 Bank E'},
+{id:443,bl:'E059',n:'',bn:'ME-1 Bank E',bnum:1,fn:'Piano',cls:'ME1 piano',nt:'ME1 Choir 59 - preset 59 de ME-1 Bank E'},
+{id:444,bl:'E060',n:'',bn:'ME-1 Bank E',bnum:1,fn:'Choir',cls:'ME1 choir',nt:'ME1 Expanded Piano 60 - preset 60 de ME-1 Bank E'},
+{id:445,bl:'E061',n:'',bn:'ME-1 Bank E',bnum:1,fn:'Perc',cls:'ME1 perc',nt:'ME1 Fat Pad 61 - preset 61 de ME-1 Bank E'},
+{id:446,bl:'E062',n:'',bn:'ME-1 Bank E',bnum:1,fn:'Strings',cls:'ME1 strings',nt:'ME1 Choir 62 - preset 62 de ME-1 Bank E'},
+{id:447,bl:'E063',n:'',bn:'ME-1 Bank E',bnum:1,fn:'Choir',cls:'ME1 choir',nt:'ME1 Fat Pad 63 - preset 63 de ME-1 Bank E'},
+{id:448,bl:'E064',n:'',bn:'ME-1 Bank E',bnum:1,fn:'Strings',cls:'ME1 strings',nt:'ME1 Fat Pad 64 - preset 64 de ME-1 Bank E'},
+{id:449,bl:'E065',n:'',bn:'ME-1 Bank E',bnum:2,fn:'Perc',cls:'ME1 perc',nt:'ME1 Expanded Piano 65 - preset 65 de ME-1 Bank E'},
+{id:450,bl:'E066',n:'',bn:'ME-1 Bank E',bnum:2,fn:'Pad',cls:'ME1 pad',nt:'ME1 Orch Strings 66 - preset 66 de ME-1 Bank E'},
+{id:451,bl:'E067',n:'',bn:'ME-1 Bank E',bnum:2,fn:'Strings',cls:'ME1 strings',nt:'ME1 Fat Pad 67 - preset 67 de ME-1 Bank E'},
+{id:452,bl:'E068',n:'',bn:'ME-1 Bank E',bnum:2,fn:'Choir',cls:'ME1 choir',nt:'ME1 Fat Pad 68 - preset 68 de ME-1 Bank E'},
+{id:453,bl:'E069',n:'',bn:'ME-1 Bank E',bnum:2,fn:'Strings',cls:'ME1 strings',nt:'ME1 Fat Pad 69 - preset 69 de ME-1 Bank E'},
+{id:454,bl:'E070',n:'',bn:'ME-1 Bank E',bnum:2,fn:'Piano',cls:'ME1 piano',nt:'ME1 Choir 70 - preset 70 de ME-1 Bank E'},
+{id:455,bl:'E071',n:'',bn:'ME-1 Bank E',bnum:2,fn:'Perc',cls:'ME1 perc',nt:'ME1 Choir 71 - preset 71 de ME-1 Bank E'},
+{id:456,bl:'E072',n:'',bn:'ME-1 Bank E',bnum:2,fn:'Choir',cls:'ME1 choir',nt:'ME1 Orch Strings 72 - preset 72 de ME-1 Bank E'},
+{id:457,bl:'E073',n:'',bn:'ME-1 Bank E',bnum:2,fn:'Perc',cls:'ME1 perc',nt:'ME1 Expanded Piano 73 - preset 73 de ME-1 Bank E'},
+{id:458,bl:'E074',n:'',bn:'ME-1 Bank E',bnum:2,fn:'Pad',cls:'ME1 pad',nt:'ME1 World Perc 74 - preset 74 de ME-1 Bank E'},
+{id:459,bl:'E075',n:'',bn:'ME-1 Bank E',bnum:2,fn:'Choir',cls:'ME1 choir',nt:'ME1 Expanded Piano 75 - preset 75 de ME-1 Bank E'},
+{id:460,bl:'E076',n:'',bn:'ME-1 Bank E',bnum:2,fn:'Perc',cls:'ME1 perc',nt:'ME1 World Perc 76 - preset 76 de ME-1 Bank E'},
+{id:461,bl:'E077',n:'',bn:'ME-1 Bank E',bnum:2,fn:'Piano',cls:'ME1 piano',nt:'ME1 World Perc 77 - preset 77 de ME-1 Bank E'},
+{id:462,bl:'E078',n:'',bn:'ME-1 Bank E',bnum:2,fn:'Choir',cls:'ME1 choir',nt:'ME1 Orch Strings 78 - preset 78 de ME-1 Bank E'},
+{id:463,bl:'E079',n:'',bn:'ME-1 Bank E',bnum:2,fn:'Choir',cls:'ME1 choir',nt:'ME1 Orch Strings 79 - preset 79 de ME-1 Bank E'},
+{id:464,bl:'E080',n:'',bn:'ME-1 Bank E',bnum:2,fn:'Piano',cls:'ME1 piano',nt:'ME1 Fat Pad 80 - preset 80 de ME-1 Bank E'},
+{id:465,bl:'E081',n:'',bn:'ME-1 Bank E',bnum:2,fn:'Strings',cls:'ME1 strings',nt:'ME1 Orch Strings 81 - preset 81 de ME-1 Bank E'},
+{id:466,bl:'E082',n:'',bn:'ME-1 Bank E',bnum:2,fn:'Choir',cls:'ME1 choir',nt:'ME1 Expanded Piano 82 - preset 82 de ME-1 Bank E'},
+{id:467,bl:'E083',n:'',bn:'ME-1 Bank E',bnum:2,fn:'Perc',cls:'ME1 perc',nt:'ME1 Orch Strings 83 - preset 83 de ME-1 Bank E'},
+{id:468,bl:'E084',n:'',bn:'ME-1 Bank E',bnum:2,fn:'Pad',cls:'ME1 pad',nt:'ME1 Orch Strings 84 - preset 84 de ME-1 Bank E'},
+{id:469,bl:'E085',n:'',bn:'ME-1 Bank E',bnum:2,fn:'Piano',cls:'ME1 piano',nt:'ME1 Orch Strings 85 - preset 85 de ME-1 Bank E'},
+{id:470,bl:'E086',n:'',bn:'ME-1 Bank E',bnum:2,fn:'Choir',cls:'ME1 choir',nt:'ME1 Orch Strings 86 - preset 86 de ME-1 Bank E'},
+{id:471,bl:'E087',n:'',bn:'ME-1 Bank E',bnum:2,fn:'Perc',cls:'ME1 perc',nt:'ME1 Orch Strings 87 - preset 87 de ME-1 Bank E'},
+{id:472,bl:'E088',n:'',bn:'ME-1 Bank E',bnum:2,fn:'Pad',cls:'ME1 pad',nt:'ME1 Choir 88 - preset 88 de ME-1 Bank E'},
+{id:473,bl:'E089',n:'',bn:'ME-1 Bank E',bnum:2,fn:'Piano',cls:'ME1 piano',nt:'ME1 Expanded Piano 89 - preset 89 de ME-1 Bank E'},
+{id:474,bl:'E090',n:'',bn:'ME-1 Bank E',bnum:2,fn:'Piano',cls:'ME1 piano',nt:'ME1 Expanded Piano 90 - preset 90 de ME-1 Bank E'},
+{id:475,bl:'E091',n:'',bn:'ME-1 Bank E',bnum:2,fn:'Perc',cls:'ME1 perc',nt:'ME1 World Perc 91 - preset 91 de ME-1 Bank E'},
+{id:476,bl:'E092',n:'',bn:'ME-1 Bank E',bnum:2,fn:'Piano',cls:'ME1 piano',nt:'ME1 Choir 92 - preset 92 de ME-1 Bank E'},
+{id:477,bl:'E093',n:'',bn:'ME-1 Bank E',bnum:2,fn:'Strings',cls:'ME1 strings',nt:'ME1 Choir 93 - preset 93 de ME-1 Bank E'},
+{id:478,bl:'E094',n:'',bn:'ME-1 Bank E',bnum:2,fn:'Strings',cls:'ME1 strings',nt:'ME1 World Perc 94 - preset 94 de ME-1 Bank E'},
+{id:479,bl:'E095',n:'',bn:'ME-1 Bank E',bnum:2,fn:'Pad',cls:'ME1 pad',nt:'ME1 World Perc 95 - preset 95 de ME-1 Bank E'},
+{id:480,bl:'E096',n:'',bn:'ME-1 Bank E',bnum:2,fn:'Perc',cls:'ME1 perc',nt:'ME1 Expanded Piano 96 - preset 96 de ME-1 Bank E'},
+{id:481,bl:'E097',n:'',bn:'ME-1 Bank E',bnum:3,fn:'Perc',cls:'ME1 perc',nt:'ME1 Expanded Piano 97 - preset 97 de ME-1 Bank E'},
+{id:482,bl:'E098',n:'',bn:'ME-1 Bank E',bnum:3,fn:'Choir',cls:'ME1 choir',nt:'ME1 Orch Strings 98 - preset 98 de ME-1 Bank E'},
+{id:483,bl:'E099',n:'',bn:'ME-1 Bank E',bnum:3,fn:'Pad',cls:'ME1 pad',nt:'ME1 Expanded Piano 99 - preset 99 de ME-1 Bank E'},
+{id:484,bl:'E100',n:'',bn:'ME-1 Bank E',bnum:3,fn:'Choir',cls:'ME1 choir',nt:'ME1 Expanded Piano 100 - preset 100 de ME-1 Bank E'},
+{id:485,bl:'E101',n:'',bn:'ME-1 Bank E',bnum:3,fn:'Pad',cls:'ME1 pad',nt:'ME1 Choir 101 - preset 101 de ME-1 Bank E'},
+{id:486,bl:'E102',n:'',bn:'ME-1 Bank E',bnum:3,fn:'Strings',cls:'ME1 strings',nt:'ME1 Orch Strings 102 - preset 102 de ME-1 Bank E'},
+{id:487,bl:'E103',n:'',bn:'ME-1 Bank E',bnum:3,fn:'Piano',cls:'ME1 piano',nt:'ME1 Fat Pad 103 - preset 103 de ME-1 Bank E'},
+{id:488,bl:'E104',n:'',bn:'ME-1 Bank E',bnum:3,fn:'Strings',cls:'ME1 strings',nt:'ME1 Expanded Piano 104 - preset 104 de ME-1 Bank E'},
+{id:489,bl:'E105',n:'',bn:'ME-1 Bank E',bnum:3,fn:'Pad',cls:'ME1 pad',nt:'ME1 Choir 105 - preset 105 de ME-1 Bank E'},
+{id:490,bl:'E106',n:'',bn:'ME-1 Bank E',bnum:3,fn:'Piano',cls:'ME1 piano',nt:'ME1 Expanded Piano 106 - preset 106 de ME-1 Bank E'},
+{id:491,bl:'E107',n:'',bn:'ME-1 Bank E',bnum:3,fn:'Perc',cls:'ME1 perc',nt:'ME1 Orch Strings 107 - preset 107 de ME-1 Bank E'},
+{id:492,bl:'E108',n:'',bn:'ME-1 Bank E',bnum:3,fn:'Piano',cls:'ME1 piano',nt:'ME1 World Perc 108 - preset 108 de ME-1 Bank E'},
+{id:493,bl:'E109',n:'',bn:'ME-1 Bank E',bnum:3,fn:'Piano',cls:'ME1 piano',nt:'ME1 Orch Strings 109 - preset 109 de ME-1 Bank E'},
+{id:494,bl:'E110',n:'',bn:'ME-1 Bank E',bnum:3,fn:'Strings',cls:'ME1 strings',nt:'ME1 World Perc 110 - preset 110 de ME-1 Bank E'},
+{id:495,bl:'E111',n:'',bn:'ME-1 Bank E',bnum:3,fn:'Strings',cls:'ME1 strings',nt:'ME1 Choir 111 - preset 111 de ME-1 Bank E'},
+{id:496,bl:'E112',n:'',bn:'ME-1 Bank E',bnum:3,fn:'Piano',cls:'ME1 piano',nt:'ME1 World Perc 112 - preset 112 de ME-1 Bank E'},
+{id:497,bl:'E113',n:'',bn:'ME-1 Bank E',bnum:3,fn:'Strings',cls:'ME1 strings',nt:'ME1 World Perc 113 - preset 113 de ME-1 Bank E'},
+{id:498,bl:'E114',n:'',bn:'ME-1 Bank E',bnum:3,fn:'Pad',cls:'ME1 pad',nt:'ME1 World Perc 114 - preset 114 de ME-1 Bank E'},
+{id:499,bl:'E115',n:'',bn:'ME-1 Bank E',bnum:3,fn:'Perc',cls:'ME1 perc',nt:'ME1 Choir 115 - preset 115 de ME-1 Bank E'},
+{id:500,bl:'E116',n:'',bn:'ME-1 Bank E',bnum:3,fn:'Strings',cls:'ME1 strings',nt:'ME1 Expanded Piano 116 - preset 116 de ME-1 Bank E'},
+{id:501,bl:'E117',n:'',bn:'ME-1 Bank E',bnum:3,fn:'Pad',cls:'ME1 pad',nt:'ME1 Expanded Piano 117 - preset 117 de ME-1 Bank E'},
+{id:502,bl:'E118',n:'',bn:'ME-1 Bank E',bnum:3,fn:'Choir',cls:'ME1 choir',nt:'ME1 Choir 118 - preset 118 de ME-1 Bank E'},
+{id:503,bl:'E119',n:'',bn:'ME-1 Bank E',bnum:3,fn:'Perc',cls:'ME1 perc',nt:'ME1 Choir 119 - preset 119 de ME-1 Bank E'},
+{id:504,bl:'E120',n:'',bn:'ME-1 Bank E',bnum:3,fn:'Choir',cls:'ME1 choir',nt:'ME1 Orch Strings 120 - preset 120 de ME-1 Bank E'},
+{id:505,bl:'E121',n:'',bn:'ME-1 Bank E',bnum:3,fn:'Pad',cls:'ME1 pad',nt:'ME1 Expanded Piano 121 - preset 121 de ME-1 Bank E'},
+{id:506,bl:'E122',n:'',bn:'ME-1 Bank E',bnum:3,fn:'Strings',cls:'ME1 strings',nt:'ME1 World Perc 122 - preset 122 de ME-1 Bank E'},
+{id:507,bl:'E123',n:'',bn:'ME-1 Bank E',bnum:3,fn:'Piano',cls:'ME1 piano',nt:'ME1 Expanded Piano 123 - preset 123 de ME-1 Bank E'},
+{id:508,bl:'E124',n:'',bn:'ME-1 Bank E',bnum:3,fn:'Pad',cls:'ME1 pad',nt:'ME1 Expanded Piano 124 - preset 124 de ME-1 Bank E'},
+{id:509,bl:'E125',n:'',bn:'ME-1 Bank E',bnum:3,fn:'Piano',cls:'ME1 piano',nt:'ME1 Choir 125 - preset 125 de ME-1 Bank E'},
+{id:510,bl:'E126',n:'',bn:'ME-1 Bank E',bnum:3,fn:'Piano',cls:'ME1 piano',nt:'ME1 Choir 126 - preset 126 de ME-1 Bank E'},
+{id:511,bl:'E127',n:'',bn:'ME-1 Bank E',bnum:3,fn:'Strings',cls:'ME1 strings',nt:'ME1 World Perc 127 - preset 127 de ME-1 Bank E'},
+{id:512,bl:'E128',n:'',bn:'ME-1 Bank E',bnum:3,fn:'Strings',cls:'ME1 strings',nt:'ME1 World Perc 128 - preset 128 de ME-1 Bank E'},
+{id:513,bl:'F001',n:'Macro-Grand',bn:'ME-1 Bank F',bnum:0,fn:'Strings',cls:'ME1 strings',nt:'ME1 World Perc 1 - preset 1 de ME-1 Bank F'},
+{id:514,bl:'F002',n:'Macro-EP',bn:'ME-1 Bank F',bnum:0,fn:'Strings',cls:'ME1 strings',nt:'ME1 Choir 2 - preset 2 de ME-1 Bank F'},
+{id:515,bl:'F003',n:'Macro-Organ',bn:'ME-1 Bank F',bnum:0,fn:'Piano',cls:'ME1 piano',nt:'ME1 Orch Strings 3 - preset 3 de ME-1 Bank F'},
+{id:516,bl:'F004',n:'Macro-Strings',bn:'ME-1 Bank F',bnum:0,fn:'Choir',cls:'ME1 choir',nt:'ME1 Choir 4 - preset 4 de ME-1 Bank F'},
+{id:517,bl:'F005',n:'Macro-Brass',bn:'ME-1 Bank F',bnum:0,fn:'Choir',cls:'ME1 choir',nt:'ME1 Orch Strings 5 - preset 5 de ME-1 Bank F'},
+{id:518,bl:'F006',n:'Macro-Lead 1',bn:'ME-1 Bank F',bnum:0,fn:'Perc',cls:'ME1 perc',nt:'ME1 Orch Strings 6 - preset 6 de ME-1 Bank F'},
+{id:519,bl:'F007',n:'Macro-Lead 2',bn:'ME-1 Bank F',bnum:0,fn:'Pad',cls:'ME1 pad',nt:'ME1 Expanded Piano 7 - preset 7 de ME-1 Bank F'},
+{id:520,bl:'F008',n:'Macro-Pad 1',bn:'ME-1 Bank F',bnum:0,fn:'Pad',cls:'ME1 pad',nt:'ME1 World Perc 8 - preset 8 de ME-1 Bank F'},
+{id:521,bl:'F009',n:'Macro-Pad 2',bn:'ME-1 Bank F',bnum:0,fn:'Piano',cls:'ME1 piano',nt:'ME1 World Perc 9 - preset 9 de ME-1 Bank F'},
+{id:522,bl:'F010',n:'Macro-Bass 1',bn:'ME-1 Bank F',bnum:0,fn:'Strings',cls:'ME1 strings',nt:'ME1 Choir 10 - preset 10 de ME-1 Bank F'},
+{id:523,bl:'F011',n:'Macro-Bass 2',bn:'ME-1 Bank F',bnum:0,fn:'Choir',cls:'ME1 choir',nt:'ME1 Orch Strings 11 - preset 11 de ME-1 Bank F'},
+{id:524,bl:'F012',n:'Formant-Filter 1',bn:'ME-1 Bank F',bnum:0,fn:'Piano',cls:'ME1 piano',nt:'ME1 Orch Strings 12 - preset 12 de ME-1 Bank F'},
+{id:525,bl:'F013',n:'Formant-Filter 2',bn:'ME-1 Bank F',bnum:0,fn:'Pad',cls:'ME1 pad',nt:'ME1 Fat Pad 13 - preset 13 de ME-1 Bank F'},
+{id:526,bl:'F014',n:'Additive-Perc 1',bn:'ME-1 Bank F',bnum:0,fn:'Strings',cls:'ME1 strings',nt:'ME1 Choir 14 - preset 14 de ME-1 Bank F'},
+{id:527,bl:'F015',n:'Additive-Perc 2',bn:'ME-1 Bank F',bnum:0,fn:'Choir',cls:'ME1 choir',nt:'ME1 Expanded Piano 15 - preset 15 de ME-1 Bank F'},
+{id:528,bl:'F016',n:'Morph-Drums',bn:'ME-1 Bank F',bnum:0,fn:'Perc',cls:'ME1 perc',nt:'ME1 World Perc 16 - preset 16 de ME-1 Bank F'},
+{id:529,bl:'F017',n:'Heaven-W',bn:'ME-1 Bank F',bnum:0,fn:'Strings',cls:'ME1 strings',nt:'ME1 Choir 17 - preset 17 de ME-1 Bank F'},
+{id:530,bl:'F018',n:'Aurora-W',bn:'ME-1 Bank F',bnum:0,fn:'Pad',cls:'ME1 pad',nt:'ME1 Choir 18 - preset 18 de ME-1 Bank F'},
+{id:531,bl:'F019',n:'Solina-W',bn:'ME-1 Bank F',bnum:0,fn:'Piano',cls:'ME1 piano',nt:'ME1 World Perc 19 - preset 19 de ME-1 Bank F'},
+{id:532,bl:'F020',n:'Harmonic-Pno-W',bn:'ME-1 Bank F',bnum:0,fn:'Choir',cls:'ME1 choir',nt:'ME1 Fat Pad 20 - preset 20 de ME-1 Bank F'},
+{id:533,bl:'F021',n:'Cyber-Pluck-W',bn:'ME-1 Bank F',bnum:0,fn:'Choir',cls:'ME1 choir',nt:'ME1 Expanded Piano 21 - preset 21 de ME-1 Bank F'},
+{id:534,bl:'F022',n:'Glass-Vox-W',bn:'ME-1 Bank F',bnum:0,fn:'Perc',cls:'ME1 perc',nt:'ME1 World Perc 22 - preset 22 de ME-1 Bank F'},
+{id:535,bl:'F023',n:'Formant-Sweep-W',bn:'ME-1 Bank F',bnum:0,fn:'Pad',cls:'ME1 pad',nt:'ME1 Orch Strings 23 - preset 23 de ME-1 Bank F'},
+{id:536,bl:'F024',n:'Morphed-S-W',bn:'ME-1 Bank F',bnum:0,fn:'Piano',cls:'ME1 piano',nt:'ME1 Expanded Piano 24 - preset 24 de ME-1 Bank F'},
+{id:537,bl:'F025',n:'Spectral-P-W',bn:'ME-1 Bank F',bnum:0,fn:'Piano',cls:'ME1 piano',nt:'ME1 Choir 25 - preset 25 de ME-1 Bank F'},
+{id:538,bl:'F026',n:'Ice-Age-W',bn:'ME-1 Bank F',bnum:0,fn:'Piano',cls:'ME1 piano',nt:'ME1 Choir 26 - preset 26 de ME-1 Bank F'},
+{id:539,bl:'F027',n:'Solar-Wind-W',bn:'ME-1 Bank F',bnum:0,fn:'Pad',cls:'ME1 pad',nt:'ME1 Expanded Piano 27 - preset 27 de ME-1 Bank F'},
+{id:540,bl:'F028',n:'Reso-Lead-W',bn:'ME-1 Bank F',bnum:0,fn:'Piano',cls:'ME1 piano',nt:'ME1 World Perc 28 - preset 28 de ME-1 Bank F'},
+{id:541,bl:'F029',n:'Formant-L-W',bn:'ME-1 Bank F',bnum:0,fn:'Pad',cls:'ME1 pad',nt:'ME1 Expanded Piano 29 - preset 29 de ME-1 Bank F'},
+{id:542,bl:'F030',n:'Square-L-W',bn:'ME-1 Bank F',bnum:0,fn:'Piano',cls:'ME1 piano',nt:'ME1 Orch Strings 30 - preset 30 de ME-1 Bank F'},
+{id:543,bl:'F031',n:'Saw-Lead-W',bn:'ME-1 Bank F',bnum:0,fn:'Piano',cls:'ME1 piano',nt:'ME1 Orch Strings 31 - preset 31 de ME-1 Bank F'},
+{id:544,bl:'F032',n:'Additive-L-W',bn:'ME-1 Bank F',bnum:0,fn:'Strings',cls:'ME1 strings',nt:'ME1 Fat Pad 32 - preset 32 de ME-1 Bank F'},
+{id:545,bl:'F033',n:'Sync-Lead-W',bn:'ME-1 Bank F',bnum:1,fn:'Choir',cls:'ME1 choir',nt:'ME1 Orch Strings 33 - preset 33 de ME-1 Bank F'},
+{id:546,bl:'F034',n:'Vowel-L-W',bn:'ME-1 Bank F',bnum:1,fn:'Choir',cls:'ME1 choir',nt:'ME1 Orch Strings 34 - preset 34 de ME-1 Bank F'},
+{id:547,bl:'F035',n:'Digi-Lead-W',bn:'ME-1 Bank F',bnum:1,fn:'Piano',cls:'ME1 piano',nt:'ME1 World Perc 35 - preset 35 de ME-1 Bank F'},
+{id:548,bl:'F036',n:'Solo-Lead-W',bn:'ME-1 Bank F',bnum:1,fn:'Choir',cls:'ME1 choir',nt:'ME1 Choir 36 - preset 36 de ME-1 Bank F'},
+{id:549,bl:'F037',n:'Metal-L-W',bn:'ME-1 Bank F',bnum:1,fn:'Perc',cls:'ME1 perc',nt:'ME1 Choir 37 - preset 37 de ME-1 Bank F'},
+{id:550,bl:'F038',n:'Reso-Bass-W',bn:'ME-1 Bank F',bnum:1,fn:'Choir',cls:'ME1 choir',nt:'ME1 Orch Strings 38 - preset 38 de ME-1 Bank F'},
+{id:551,bl:'F039',n:'Formant-B-W',bn:'ME-1 Bank F',bnum:1,fn:'Piano',cls:'ME1 piano',nt:'ME1 Expanded Piano 39 - preset 39 de ME-1 Bank F'},
+{id:552,bl:'F040',n:'Techno-B-W',bn:'ME-1 Bank F',bnum:1,fn:'Piano',cls:'ME1 piano',nt:'ME1 Orch Strings 40 - preset 40 de ME-1 Bank F'},
+{id:553,bl:'F041',n:'',bn:'ME-1 Bank F',bnum:1,fn:'Perc',cls:'ME1 perc',nt:'ME1 Choir 41 - preset 41 de ME-1 Bank F'},
+{id:554,bl:'F042',n:'',bn:'ME-1 Bank F',bnum:1,fn:'Pad',cls:'ME1 pad',nt:'ME1 Expanded Piano 42 - preset 42 de ME-1 Bank F'},
+{id:555,bl:'F043',n:'',bn:'ME-1 Bank F',bnum:1,fn:'Perc',cls:'ME1 perc',nt:'ME1 Fat Pad 43 - preset 43 de ME-1 Bank F'},
+{id:556,bl:'F044',n:'',bn:'ME-1 Bank F',bnum:1,fn:'Perc',cls:'ME1 perc',nt:'ME1 World Perc 44 - preset 44 de ME-1 Bank F'},
+{id:557,bl:'F045',n:'',bn:'ME-1 Bank F',bnum:1,fn:'Pad',cls:'ME1 pad',nt:'ME1 Expanded Piano 45 - preset 45 de ME-1 Bank F'},
+{id:558,bl:'F046',n:'',bn:'ME-1 Bank F',bnum:1,fn:'Piano',cls:'ME1 piano',nt:'ME1 Expanded Piano 46 - preset 46 de ME-1 Bank F'},
+{id:559,bl:'F047',n:'',bn:'ME-1 Bank F',bnum:1,fn:'Pad',cls:'ME1 pad',nt:'ME1 Fat Pad 47 - preset 47 de ME-1 Bank F'},
+{id:560,bl:'F048',n:'',bn:'ME-1 Bank F',bnum:1,fn:'Piano',cls:'ME1 piano',nt:'ME1 Orch Strings 48 - preset 48 de ME-1 Bank F'},
+{id:561,bl:'F049',n:'',bn:'ME-1 Bank F',bnum:1,fn:'Piano',cls:'ME1 piano',nt:'ME1 Expanded Piano 49 - preset 49 de ME-1 Bank F'},
+{id:562,bl:'F050',n:'',bn:'ME-1 Bank F',bnum:1,fn:'Perc',cls:'ME1 perc',nt:'ME1 World Perc 50 - preset 50 de ME-1 Bank F'},
+{id:563,bl:'F051',n:'',bn:'ME-1 Bank F',bnum:1,fn:'Perc',cls:'ME1 perc',nt:'ME1 World Perc 51 - preset 51 de ME-1 Bank F'},
+{id:564,bl:'F052',n:'',bn:'ME-1 Bank F',bnum:1,fn:'Strings',cls:'ME1 strings',nt:'ME1 World Perc 52 - preset 52 de ME-1 Bank F'},
+{id:565,bl:'F053',n:'',bn:'ME-1 Bank F',bnum:1,fn:'Piano',cls:'ME1 piano',nt:'ME1 Expanded Piano 53 - preset 53 de ME-1 Bank F'},
+{id:566,bl:'F054',n:'',bn:'ME-1 Bank F',bnum:1,fn:'Strings',cls:'ME1 strings',nt:'ME1 Orch Strings 54 - preset 54 de ME-1 Bank F'},
+{id:567,bl:'F055',n:'',bn:'ME-1 Bank F',bnum:1,fn:'Strings',cls:'ME1 strings',nt:'ME1 Choir 55 - preset 55 de ME-1 Bank F'},
+{id:568,bl:'F056',n:'',bn:'ME-1 Bank F',bnum:1,fn:'Choir',cls:'ME1 choir',nt:'ME1 Choir 56 - preset 56 de ME-1 Bank F'},
+{id:569,bl:'F057',n:'',bn:'ME-1 Bank F',bnum:1,fn:'Perc',cls:'ME1 perc',nt:'ME1 Fat Pad 57 - preset 57 de ME-1 Bank F'},
+{id:570,bl:'F058',n:'',bn:'ME-1 Bank F',bnum:1,fn:'Choir',cls:'ME1 choir',nt:'ME1 Choir 58 - preset 58 de ME-1 Bank F'},
+{id:571,bl:'F059',n:'',bn:'ME-1 Bank F',bnum:1,fn:'Strings',cls:'ME1 strings',nt:'ME1 Orch Strings 59 - preset 59 de ME-1 Bank F'},
+{id:572,bl:'F060',n:'',bn:'ME-1 Bank F',bnum:1,fn:'Strings',cls:'ME1 strings',nt:'ME1 Fat Pad 60 - preset 60 de ME-1 Bank F'},
+{id:573,bl:'F061',n:'',bn:'ME-1 Bank F',bnum:1,fn:'Perc',cls:'ME1 perc',nt:'ME1 World Perc 61 - preset 61 de ME-1 Bank F'},
+{id:574,bl:'F062',n:'',bn:'ME-1 Bank F',bnum:1,fn:'Pad',cls:'ME1 pad',nt:'ME1 Fat Pad 62 - preset 62 de ME-1 Bank F'},
+{id:575,bl:'F063',n:'',bn:'ME-1 Bank F',bnum:1,fn:'Choir',cls:'ME1 choir',nt:'ME1 World Perc 63 - preset 63 de ME-1 Bank F'},
+{id:576,bl:'F064',n:'',bn:'ME-1 Bank F',bnum:1,fn:'Pad',cls:'ME1 pad',nt:'ME1 Fat Pad 64 - preset 64 de ME-1 Bank F'},
+{id:577,bl:'F065',n:'',bn:'ME-1 Bank F',bnum:2,fn:'Pad',cls:'ME1 pad',nt:'ME1 Expanded Piano 65 - preset 65 de ME-1 Bank F'},
+{id:578,bl:'F066',n:'',bn:'ME-1 Bank F',bnum:2,fn:'Choir',cls:'ME1 choir',nt:'ME1 Orch Strings 66 - preset 66 de ME-1 Bank F'},
+{id:579,bl:'F067',n:'',bn:'ME-1 Bank F',bnum:2,fn:'Pad',cls:'ME1 pad',nt:'ME1 World Perc 67 - preset 67 de ME-1 Bank F'},
+{id:580,bl:'F068',n:'',bn:'ME-1 Bank F',bnum:2,fn:'Choir',cls:'ME1 choir',nt:'ME1 Orch Strings 68 - preset 68 de ME-1 Bank F'},
+{id:581,bl:'F069',n:'',bn:'ME-1 Bank F',bnum:2,fn:'Pad',cls:'ME1 pad',nt:'ME1 Expanded Piano 69 - preset 69 de ME-1 Bank F'},
+{id:582,bl:'F070',n:'',bn:'ME-1 Bank F',bnum:2,fn:'Choir',cls:'ME1 choir',nt:'ME1 Choir 70 - preset 70 de ME-1 Bank F'},
+{id:583,bl:'F071',n:'',bn:'ME-1 Bank F',bnum:2,fn:'Choir',cls:'ME1 choir',nt:'ME1 Fat Pad 71 - preset 71 de ME-1 Bank F'},
+{id:584,bl:'F072',n:'',bn:'ME-1 Bank F',bnum:2,fn:'Pad',cls:'ME1 pad',nt:'ME1 Expanded Piano 72 - preset 72 de ME-1 Bank F'},
+{id:585,bl:'F073',n:'',bn:'ME-1 Bank F',bnum:2,fn:'Choir',cls:'ME1 choir',nt:'ME1 Fat Pad 73 - preset 73 de ME-1 Bank F'},
+{id:586,bl:'F074',n:'',bn:'ME-1 Bank F',bnum:2,fn:'Perc',cls:'ME1 perc',nt:'ME1 Expanded Piano 74 - preset 74 de ME-1 Bank F'},
+{id:587,bl:'F075',n:'',bn:'ME-1 Bank F',bnum:2,fn:'Piano',cls:'ME1 piano',nt:'ME1 Orch Strings 75 - preset 75 de ME-1 Bank F'},
+{id:588,bl:'F076',n:'',bn:'ME-1 Bank F',bnum:2,fn:'Piano',cls:'ME1 piano',nt:'ME1 World Perc 76 - preset 76 de ME-1 Bank F'},
+{id:589,bl:'F077',n:'',bn:'ME-1 Bank F',bnum:2,fn:'Strings',cls:'ME1 strings',nt:'ME1 Expanded Piano 77 - preset 77 de ME-1 Bank F'},
+{id:590,bl:'F078',n:'',bn:'ME-1 Bank F',bnum:2,fn:'Piano',cls:'ME1 piano',nt:'ME1 Fat Pad 78 - preset 78 de ME-1 Bank F'},
+{id:591,bl:'F079',n:'',bn:'ME-1 Bank F',bnum:2,fn:'Pad',cls:'ME1 pad',nt:'ME1 Fat Pad 79 - preset 79 de ME-1 Bank F'},
+{id:592,bl:'F080',n:'',bn:'ME-1 Bank F',bnum:2,fn:'Choir',cls:'ME1 choir',nt:'ME1 World Perc 80 - preset 80 de ME-1 Bank F'},
+{id:593,bl:'F081',n:'',bn:'ME-1 Bank F',bnum:2,fn:'Strings',cls:'ME1 strings',nt:'ME1 World Perc 81 - preset 81 de ME-1 Bank F'},
+{id:594,bl:'F082',n:'',bn:'ME-1 Bank F',bnum:2,fn:'Strings',cls:'ME1 strings',nt:'ME1 Fat Pad 82 - preset 82 de ME-1 Bank F'},
+{id:595,bl:'F083',n:'',bn:'ME-1 Bank F',bnum:2,fn:'Strings',cls:'ME1 strings',nt:'ME1 Orch Strings 83 - preset 83 de ME-1 Bank F'},
+{id:596,bl:'F084',n:'',bn:'ME-1 Bank F',bnum:2,fn:'Perc',cls:'ME1 perc',nt:'ME1 World Perc 84 - preset 84 de ME-1 Bank F'},
+{id:597,bl:'F085',n:'',bn:'ME-1 Bank F',bnum:2,fn:'Pad',cls:'ME1 pad',nt:'ME1 Expanded Piano 85 - preset 85 de ME-1 Bank F'},
+{id:598,bl:'F086',n:'',bn:'ME-1 Bank F',bnum:2,fn:'Piano',cls:'ME1 piano',nt:'ME1 Choir 86 - preset 86 de ME-1 Bank F'},
+{id:599,bl:'F087',n:'',bn:'ME-1 Bank F',bnum:2,fn:'Piano',cls:'ME1 piano',nt:'ME1 Choir 87 - preset 87 de ME-1 Bank F'},
+{id:600,bl:'F088',n:'',bn:'ME-1 Bank F',bnum:2,fn:'Pad',cls:'ME1 pad',nt:'ME1 Choir 88 - preset 88 de ME-1 Bank F'},
+{id:601,bl:'F089',n:'',bn:'ME-1 Bank F',bnum:2,fn:'Perc',cls:'ME1 perc',nt:'ME1 World Perc 89 - preset 89 de ME-1 Bank F'},
+{id:602,bl:'F090',n:'',bn:'ME-1 Bank F',bnum:2,fn:'Pad',cls:'ME1 pad',nt:'ME1 Expanded Piano 90 - preset 90 de ME-1 Bank F'},
+{id:603,bl:'F091',n:'',bn:'ME-1 Bank F',bnum:2,fn:'Perc',cls:'ME1 perc',nt:'ME1 World Perc 91 - preset 91 de ME-1 Bank F'},
+{id:604,bl:'F092',n:'',bn:'ME-1 Bank F',bnum:2,fn:'Strings',cls:'ME1 strings',nt:'ME1 Orch Strings 92 - preset 92 de ME-1 Bank F'},
+{id:605,bl:'F093',n:'',bn:'ME-1 Bank F',bnum:2,fn:'Pad',cls:'ME1 pad',nt:'ME1 World Perc 93 - preset 93 de ME-1 Bank F'},
+{id:606,bl:'F094',n:'',bn:'ME-1 Bank F',bnum:2,fn:'Strings',cls:'ME1 strings',nt:'ME1 Expanded Piano 94 - preset 94 de ME-1 Bank F'},
+{id:607,bl:'F095',n:'',bn:'ME-1 Bank F',bnum:2,fn:'Strings',cls:'ME1 strings',nt:'ME1 Fat Pad 95 - preset 95 de ME-1 Bank F'},
+{id:608,bl:'F096',n:'',bn:'ME-1 Bank F',bnum:2,fn:'Pad',cls:'ME1 pad',nt:'ME1 Orch Strings 96 - preset 96 de ME-1 Bank F'},
+{id:609,bl:'F097',n:'',bn:'ME-1 Bank F',bnum:3,fn:'Pad',cls:'ME1 pad',nt:'ME1 Expanded Piano 97 - preset 97 de ME-1 Bank F'},
+{id:610,bl:'F098',n:'',bn:'ME-1 Bank F',bnum:3,fn:'Choir',cls:'ME1 choir',nt:'ME1 Expanded Piano 98 - preset 98 de ME-1 Bank F'},
+{id:611,bl:'F099',n:'',bn:'ME-1 Bank F',bnum:3,fn:'Piano',cls:'ME1 piano',nt:'ME1 Orch Strings 99 - preset 99 de ME-1 Bank F'},
+{id:612,bl:'F100',n:'',bn:'ME-1 Bank F',bnum:3,fn:'Piano',cls:'ME1 piano',nt:'ME1 World Perc 100 - preset 100 de ME-1 Bank F'},
+{id:613,bl:'F101',n:'',bn:'ME-1 Bank F',bnum:3,fn:'Perc',cls:'ME1 perc',nt:'ME1 Expanded Piano 101 - preset 101 de ME-1 Bank F'},
+{id:614,bl:'F102',n:'',bn:'ME-1 Bank F',bnum:3,fn:'Piano',cls:'ME1 piano',nt:'ME1 Orch Strings 102 - preset 102 de ME-1 Bank F'},
+{id:615,bl:'F103',n:'',bn:'ME-1 Bank F',bnum:3,fn:'Strings',cls:'ME1 strings',nt:'ME1 Fat Pad 103 - preset 103 de ME-1 Bank F'},
+{id:616,bl:'F104',n:'',bn:'ME-1 Bank F',bnum:3,fn:'Choir',cls:'ME1 choir',nt:'ME1 Fat Pad 104 - preset 104 de ME-1 Bank F'},
+{id:617,bl:'F105',n:'',bn:'ME-1 Bank F',bnum:3,fn:'Choir',cls:'ME1 choir',nt:'ME1 Orch Strings 105 - preset 105 de ME-1 Bank F'},
+{id:618,bl:'F106',n:'',bn:'ME-1 Bank F',bnum:3,fn:'Perc',cls:'ME1 perc',nt:'ME1 Expanded Piano 106 - preset 106 de ME-1 Bank F'},
+{id:619,bl:'F107',n:'',bn:'ME-1 Bank F',bnum:3,fn:'Strings',cls:'ME1 strings',nt:'ME1 Orch Strings 107 - preset 107 de ME-1 Bank F'},
+{id:620,bl:'F108',n:'',bn:'ME-1 Bank F',bnum:3,fn:'Choir',cls:'ME1 choir',nt:'ME1 Choir 108 - preset 108 de ME-1 Bank F'},
+{id:621,bl:'F109',n:'',bn:'ME-1 Bank F',bnum:3,fn:'Piano',cls:'ME1 piano',nt:'ME1 Expanded Piano 109 - preset 109 de ME-1 Bank F'},
+{id:622,bl:'F110',n:'',bn:'ME-1 Bank F',bnum:3,fn:'Strings',cls:'ME1 strings',nt:'ME1 Choir 110 - preset 110 de ME-1 Bank F'},
+{id:623,bl:'F111',n:'',bn:'ME-1 Bank F',bnum:3,fn:'Pad',cls:'ME1 pad',nt:'ME1 Orch Strings 111 - preset 111 de ME-1 Bank F'},
+{id:624,bl:'F112',n:'',bn:'ME-1 Bank F',bnum:3,fn:'Perc',cls:'ME1 perc',nt:'ME1 Fat Pad 112 - preset 112 de ME-1 Bank F'},
+{id:625,bl:'F113',n:'',bn:'ME-1 Bank F',bnum:3,fn:'Strings',cls:'ME1 strings',nt:'ME1 World Perc 113 - preset 113 de ME-1 Bank F'},
+{id:626,bl:'F114',n:'',bn:'ME-1 Bank F',bnum:3,fn:'Strings',cls:'ME1 strings',nt:'ME1 Choir 114 - preset 114 de ME-1 Bank F'},
+{id:627,bl:'F115',n:'',bn:'ME-1 Bank F',bnum:3,fn:'Choir',cls:'ME1 choir',nt:'ME1 Orch Strings 115 - preset 115 de ME-1 Bank F'},
+{id:628,bl:'F116',n:'',bn:'ME-1 Bank F',bnum:3,fn:'Piano',cls:'ME1 piano',nt:'ME1 Expanded Piano 116 - preset 116 de ME-1 Bank F'},
+{id:629,bl:'F117',n:'',bn:'ME-1 Bank F',bnum:3,fn:'Choir',cls:'ME1 choir',nt:'ME1 Expanded Piano 117 - preset 117 de ME-1 Bank F'},
+{id:630,bl:'F118',n:'',bn:'ME-1 Bank F',bnum:3,fn:'Pad',cls:'ME1 pad',nt:'ME1 Fat Pad 118 - preset 118 de ME-1 Bank F'},
+{id:631,bl:'F119',n:'',bn:'ME-1 Bank F',bnum:3,fn:'Perc',cls:'ME1 perc',nt:'ME1 Fat Pad 119 - preset 119 de ME-1 Bank F'},
+{id:632,bl:'F120',n:'',bn:'ME-1 Bank F',bnum:3,fn:'Perc',cls:'ME1 perc',nt:'ME1 World Perc 120 - preset 120 de ME-1 Bank F'},
+{id:633,bl:'F121',n:'',bn:'ME-1 Bank F',bnum:3,fn:'Perc',cls:'ME1 perc',nt:'ME1 Orch Strings 121 - preset 121 de ME-1 Bank F'},
+{id:634,bl:'F122',n:'',bn:'ME-1 Bank F',bnum:3,fn:'Strings',cls:'ME1 strings',nt:'ME1 Expanded Piano 122 - preset 122 de ME-1 Bank F'},
+{id:635,bl:'F123',n:'',bn:'ME-1 Bank F',bnum:3,fn:'Pad',cls:'ME1 pad',nt:'ME1 Expanded Piano 123 - preset 123 de ME-1 Bank F'},
+{id:636,bl:'F124',n:'',bn:'ME-1 Bank F',bnum:3,fn:'Pad',cls:'ME1 pad',nt:'ME1 Choir 124 - preset 124 de ME-1 Bank F'},
+{id:637,bl:'F125',n:'',bn:'ME-1 Bank F',bnum:3,fn:'Perc',cls:'ME1 perc',nt:'ME1 Orch Strings 125 - preset 125 de ME-1 Bank F'},
+{id:638,bl:'F126',n:'',bn:'ME-1 Bank F',bnum:3,fn:'Piano',cls:'ME1 piano',nt:'ME1 Expanded Piano 126 - preset 126 de ME-1 Bank F'},
+{id:639,bl:'F127',n:'',bn:'ME-1 Bank F',bnum:3,fn:'Choir',cls:'ME1 choir',nt:'ME1 Fat Pad 127 - preset 127 de ME-1 Bank F'},
+{id:640,bl:'F128',n:'',bn:'ME-1 Bank F',bnum:3,fn:'Choir',cls:'ME1 choir',nt:'ME1 Fat Pad 128 - preset 128 de ME-1 Bank F'},
+{id:641,bl:'DK01',n:'Standard Kit',bn:'Drum Kits',bnum:10,fn:'Drums',cls:'Drum Kit',nt:''},
+{id:642,bl:'DK02',n:'Room Kit',bn:'Drum Kits',bnum:10,fn:'Drums',cls:'Drum Kit',nt:''},
+{id:643,bl:'DK03',n:'Power Kit',bn:'Drum Kits',bnum:10,fn:'Drums',cls:'Drum Kit',nt:''},
+{id:644,bl:'DK04',n:'Electronic Kit',bn:'Drum Kits',bnum:10,fn:'Drums',cls:'Drum Kit',nt:''},
+{id:645,bl:'DK05',n:'Analog Kit',bn:'Drum Kits',bnum:10,fn:'Drums',cls:'Drum Kit',nt:''},
+{id:646,bl:'DK06',n:'Jazz Kit',bn:'Drum Kits',bnum:10,fn:'Drums',cls:'Drum Kit',nt:''},
+{id:647,bl:'DK07',n:'Brush Kit',bn:'Drum Kits',bnum:10,fn:'Drums',cls:'Drum Kit',nt:''},
+{id:648,bl:'DK08',n:'Orchestra Kit',bn:'Drum Kits',bnum:10,fn:'Drums',cls:'Drum Kit',nt:''},
+{id:649,bl:'DK09',n:'SFX Kit',bn:'Drum Kits',bnum:10,fn:'Drums',cls:'Drum Kit',nt:''},
+{id:650,bl:'DK10',n:'User Kit 1',bn:'Drum Kits',bnum:10,fn:'Drums',cls:'Drum Kit',nt:''},
+{id:651,bl:'DK11',n:'User Kit 2',bn:'Drum Kits',bnum:10,fn:'Drums',cls:'Drum Kit',nt:''},
+{id:652,bl:'MA01',n:'',bn:'Multi Bank A',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:653,bl:'MA02',n:'',bn:'Multi Bank A',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:654,bl:'MA03',n:'',bn:'Multi Bank A',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:655,bl:'MA04',n:'',bn:'Multi Bank A',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:656,bl:'MA05',n:'',bn:'Multi Bank A',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:657,bl:'MA06',n:'',bn:'Multi Bank A',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:658,bl:'MA07',n:'',bn:'Multi Bank A',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:659,bl:'MA08',n:'',bn:'Multi Bank A',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:660,bl:'MA09',n:'',bn:'Multi Bank A',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:661,bl:'MA10',n:'',bn:'Multi Bank A',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:662,bl:'MA11',n:'',bn:'Multi Bank A',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:663,bl:'MA12',n:'',bn:'Multi Bank A',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:664,bl:'MA13',n:'',bn:'Multi Bank A',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:665,bl:'MA14',n:'',bn:'Multi Bank A',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:666,bl:'MA15',n:'',bn:'Multi Bank A',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:667,bl:'MA16',n:'',bn:'Multi Bank A',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:668,bl:'MA17',n:'',bn:'Multi Bank A',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:669,bl:'MA18',n:'',bn:'Multi Bank A',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:670,bl:'MA19',n:'',bn:'Multi Bank A',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:671,bl:'MA20',n:'',bn:'Multi Bank A',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:672,bl:'MA21',n:'',bn:'Multi Bank A',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:673,bl:'MA22',n:'',bn:'Multi Bank A',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:674,bl:'MA23',n:'',bn:'Multi Bank A',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:675,bl:'MA24',n:'',bn:'Multi Bank A',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:676,bl:'MA25',n:'',bn:'Multi Bank A',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:677,bl:'MA26',n:'',bn:'Multi Bank A',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:678,bl:'MA27',n:'',bn:'Multi Bank A',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:679,bl:'MA28',n:'',bn:'Multi Bank A',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:680,bl:'MA29',n:'',bn:'Multi Bank A',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:681,bl:'MA30',n:'',bn:'Multi Bank A',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:682,bl:'MA31',n:'',bn:'Multi Bank A',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:683,bl:'MA32',n:'',bn:'Multi Bank A',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:684,bl:'MA33',n:'',bn:'Multi Bank A',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:685,bl:'MA34',n:'',bn:'Multi Bank A',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:686,bl:'MA35',n:'',bn:'Multi Bank A',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:687,bl:'MA36',n:'',bn:'Multi Bank A',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:688,bl:'MA37',n:'',bn:'Multi Bank A',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:689,bl:'MA38',n:'',bn:'Multi Bank A',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:690,bl:'MA39',n:'',bn:'Multi Bank A',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:691,bl:'MA40',n:'',bn:'Multi Bank A',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:692,bl:'MA41',n:'',bn:'Multi Bank A',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:693,bl:'MA42',n:'',bn:'Multi Bank A',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:694,bl:'MA43',n:'',bn:'Multi Bank A',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:695,bl:'MA44',n:'',bn:'Multi Bank A',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:696,bl:'MA45',n:'',bn:'Multi Bank A',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:697,bl:'MA46',n:'',bn:'Multi Bank A',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:698,bl:'MA47',n:'',bn:'Multi Bank A',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:699,bl:'MA48',n:'',bn:'Multi Bank A',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:700,bl:'MA49',n:'',bn:'Multi Bank A',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:701,bl:'MA50',n:'',bn:'Multi Bank A',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:702,bl:'MA51',n:'',bn:'Multi Bank A',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:703,bl:'MA52',n:'',bn:'Multi Bank A',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:704,bl:'MA53',n:'',bn:'Multi Bank A',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:705,bl:'MA54',n:'',bn:'Multi Bank A',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:706,bl:'MA55',n:'',bn:'Multi Bank A',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:707,bl:'MA56',n:'',bn:'Multi Bank A',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:708,bl:'MA57',n:'',bn:'Multi Bank A',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:709,bl:'MA58',n:'',bn:'Multi Bank A',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:710,bl:'MA59',n:'',bn:'Multi Bank A',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:711,bl:'MA60',n:'',bn:'Multi Bank A',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:712,bl:'MA61',n:'',bn:'Multi Bank A',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:713,bl:'MA62',n:'',bn:'Multi Bank A',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:714,bl:'MA63',n:'',bn:'Multi Bank A',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:715,bl:'MA64',n:'',bn:'Multi Bank A',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:716,bl:'MB01',n:'',bn:'Multi Bank B',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:717,bl:'MB02',n:'',bn:'Multi Bank B',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:718,bl:'MB03',n:'',bn:'Multi Bank B',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:719,bl:'MB04',n:'',bn:'Multi Bank B',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:720,bl:'MB05',n:'',bn:'Multi Bank B',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:721,bl:'MB06',n:'',bn:'Multi Bank B',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:722,bl:'MB07',n:'',bn:'Multi Bank B',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:723,bl:'MB08',n:'',bn:'Multi Bank B',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:724,bl:'MB09',n:'',bn:'Multi Bank B',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:725,bl:'MB10',n:'',bn:'Multi Bank B',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:726,bl:'MB11',n:'',bn:'Multi Bank B',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:727,bl:'MB12',n:'',bn:'Multi Bank B',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:728,bl:'MB13',n:'',bn:'Multi Bank B',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:729,bl:'MB14',n:'',bn:'Multi Bank B',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:730,bl:'MB15',n:'',bn:'Multi Bank B',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:731,bl:'MB16',n:'',bn:'Multi Bank B',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:732,bl:'MB17',n:'',bn:'Multi Bank B',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:733,bl:'MB18',n:'',bn:'Multi Bank B',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:734,bl:'MB19',n:'',bn:'Multi Bank B',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:735,bl:'MB20',n:'',bn:'Multi Bank B',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:736,bl:'MB21',n:'',bn:'Multi Bank B',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:737,bl:'MB22',n:'',bn:'Multi Bank B',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:738,bl:'MB23',n:'',bn:'Multi Bank B',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:739,bl:'MB24',n:'',bn:'Multi Bank B',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:740,bl:'MB25',n:'',bn:'Multi Bank B',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:741,bl:'MB26',n:'',bn:'Multi Bank B',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:742,bl:'MB27',n:'',bn:'Multi Bank B',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:743,bl:'MB28',n:'',bn:'Multi Bank B',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:744,bl:'MB29',n:'',bn:'Multi Bank B',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:745,bl:'MB30',n:'',bn:'Multi Bank B',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:746,bl:'MB31',n:'',bn:'Multi Bank B',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:747,bl:'MB32',n:'',bn:'Multi Bank B',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:748,bl:'MB33',n:'',bn:'Multi Bank B',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:749,bl:'MB34',n:'',bn:'Multi Bank B',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:750,bl:'MB35',n:'',bn:'Multi Bank B',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:751,bl:'MB36',n:'',bn:'Multi Bank B',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:752,bl:'MB37',n:'',bn:'Multi Bank B',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:753,bl:'MB38',n:'',bn:'Multi Bank B',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:754,bl:'MB39',n:'',bn:'Multi Bank B',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:755,bl:'MB40',n:'',bn:'Multi Bank B',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:756,bl:'MB41',n:'',bn:'Multi Bank B',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:757,bl:'MB42',n:'',bn:'Multi Bank B',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:758,bl:'MB43',n:'',bn:'Multi Bank B',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:759,bl:'MB44',n:'',bn:'Multi Bank B',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:760,bl:'MB45',n:'',bn:'Multi Bank B',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:761,bl:'MB46',n:'',bn:'Multi Bank B',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:762,bl:'MB47',n:'',bn:'Multi Bank B',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:763,bl:'MB48',n:'',bn:'Multi Bank B',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:764,bl:'MB49',n:'',bn:'Multi Bank B',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:765,bl:'MB50',n:'',bn:'Multi Bank B',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:766,bl:'MB51',n:'',bn:'Multi Bank B',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:767,bl:'MB52',n:'',bn:'Multi Bank B',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:768,bl:'MB53',n:'',bn:'Multi Bank B',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:769,bl:'MB54',n:'',bn:'Multi Bank B',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:770,bl:'MB55',n:'',bn:'Multi Bank B',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:771,bl:'MB56',n:'',bn:'Multi Bank B',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:772,bl:'MB57',n:'',bn:'Multi Bank B',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:773,bl:'MB58',n:'',bn:'Multi Bank B',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:774,bl:'MB59',n:'',bn:'Multi Bank B',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:775,bl:'MB60',n:'',bn:'Multi Bank B',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:776,bl:'MB61',n:'',bn:'Multi Bank B',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:777,bl:'MB62',n:'',bn:'Multi Bank B',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:778,bl:'MB63',n:'',bn:'Multi Bank B',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:779,bl:'MB64',n:'',bn:'Multi Bank B',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:780,bl:'ME01',n:'',bn:'Multi Bank E',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:781,bl:'ME02',n:'',bn:'Multi Bank E',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:782,bl:'ME03',n:'',bn:'Multi Bank E',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:783,bl:'ME04',n:'',bn:'Multi Bank E',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:784,bl:'ME05',n:'',bn:'Multi Bank E',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:785,bl:'ME06',n:'',bn:'Multi Bank E',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:786,bl:'ME07',n:'',bn:'Multi Bank E',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:787,bl:'ME08',n:'',bn:'Multi Bank E',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:788,bl:'ME09',n:'',bn:'Multi Bank E',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:789,bl:'ME10',n:'',bn:'Multi Bank E',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:790,bl:'ME11',n:'',bn:'Multi Bank E',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:791,bl:'ME12',n:'',bn:'Multi Bank E',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:792,bl:'ME13',n:'',bn:'Multi Bank E',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:793,bl:'ME14',n:'',bn:'Multi Bank E',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:794,bl:'ME15',n:'',bn:'Multi Bank E',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:795,bl:'ME16',n:'',bn:'Multi Bank E',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:796,bl:'ME17',n:'',bn:'Multi Bank E',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:797,bl:'ME18',n:'',bn:'Multi Bank E',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:798,bl:'ME19',n:'',bn:'Multi Bank E',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:799,bl:'ME20',n:'',bn:'Multi Bank E',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:800,bl:'ME21',n:'',bn:'Multi Bank E',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:801,bl:'ME22',n:'',bn:'Multi Bank E',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:802,bl:'ME23',n:'',bn:'Multi Bank E',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:803,bl:'ME24',n:'',bn:'Multi Bank E',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:804,bl:'ME25',n:'',bn:'Multi Bank E',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:805,bl:'ME26',n:'',bn:'Multi Bank E',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:806,bl:'ME27',n:'',bn:'Multi Bank E',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:807,bl:'ME28',n:'',bn:'Multi Bank E',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:808,bl:'ME29',n:'',bn:'Multi Bank E',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:809,bl:'ME30',n:'',bn:'Multi Bank E',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:810,bl:'ME31',n:'',bn:'Multi Bank E',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:811,bl:'ME32',n:'',bn:'Multi Bank E',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:812,bl:'ME33',n:'',bn:'Multi Bank E',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:813,bl:'ME34',n:'',bn:'Multi Bank E',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:814,bl:'ME35',n:'',bn:'Multi Bank E',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:815,bl:'ME36',n:'',bn:'Multi Bank E',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:816,bl:'ME37',n:'',bn:'Multi Bank E',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:817,bl:'ME38',n:'',bn:'Multi Bank E',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:818,bl:'ME39',n:'',bn:'Multi Bank E',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:819,bl:'ME40',n:'',bn:'Multi Bank E',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:820,bl:'ME41',n:'',bn:'Multi Bank E',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:821,bl:'ME42',n:'',bn:'Multi Bank E',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:822,bl:'ME43',n:'',bn:'Multi Bank E',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:823,bl:'ME44',n:'',bn:'Multi Bank E',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:824,bl:'ME45',n:'',bn:'Multi Bank E',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:825,bl:'ME46',n:'',bn:'Multi Bank E',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:826,bl:'ME47',n:'',bn:'Multi Bank E',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:827,bl:'ME48',n:'',bn:'Multi Bank E',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:828,bl:'ME49',n:'',bn:'Multi Bank E',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:829,bl:'ME50',n:'',bn:'Multi Bank E',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:830,bl:'ME51',n:'',bn:'Multi Bank E',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:831,bl:'ME52',n:'',bn:'Multi Bank E',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:832,bl:'ME53',n:'',bn:'Multi Bank E',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:833,bl:'ME54',n:'',bn:'Multi Bank E',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:834,bl:'ME55',n:'',bn:'Multi Bank E',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:835,bl:'ME56',n:'',bn:'Multi Bank E',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:836,bl:'ME57',n:'',bn:'Multi Bank E',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:837,bl:'ME58',n:'',bn:'Multi Bank E',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:838,bl:'ME59',n:'',bn:'Multi Bank E',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:839,bl:'ME60',n:'',bn:'Multi Bank E',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:840,bl:'ME61',n:'',bn:'Multi Bank E',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:841,bl:'ME62',n:'',bn:'Multi Bank E',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:842,bl:'ME63',n:'',bn:'Multi Bank E',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:843,bl:'ME64',n:'',bn:'Multi Bank E',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:844,bl:'MF01',n:'',bn:'Multi Bank F',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:845,bl:'MF02',n:'',bn:'Multi Bank F',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:846,bl:'MF03',n:'',bn:'Multi Bank F',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:847,bl:'MF04',n:'',bn:'Multi Bank F',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:848,bl:'MF05',n:'',bn:'Multi Bank F',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:849,bl:'MF06',n:'',bn:'Multi Bank F',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:850,bl:'MF07',n:'',bn:'Multi Bank F',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:851,bl:'MF08',n:'',bn:'Multi Bank F',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:852,bl:'MF09',n:'',bn:'Multi Bank F',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:853,bl:'MF10',n:'',bn:'Multi Bank F',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:854,bl:'MF11',n:'',bn:'Multi Bank F',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:855,bl:'MF12',n:'',bn:'Multi Bank F',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:856,bl:'MF13',n:'',bn:'Multi Bank F',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:857,bl:'MF14',n:'',bn:'Multi Bank F',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:858,bl:'MF15',n:'',bn:'Multi Bank F',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:859,bl:'MF16',n:'',bn:'Multi Bank F',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:860,bl:'MF17',n:'',bn:'Multi Bank F',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:861,bl:'MF18',n:'',bn:'Multi Bank F',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:862,bl:'MF19',n:'',bn:'Multi Bank F',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:863,bl:'MF20',n:'',bn:'Multi Bank F',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:864,bl:'MF21',n:'',bn:'Multi Bank F',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:865,bl:'MF22',n:'',bn:'Multi Bank F',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:866,bl:'MF23',n:'',bn:'Multi Bank F',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:867,bl:'MF24',n:'',bn:'Multi Bank F',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:868,bl:'MF25',n:'',bn:'Multi Bank F',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:869,bl:'MF26',n:'',bn:'Multi Bank F',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:870,bl:'MF27',n:'',bn:'Multi Bank F',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:871,bl:'MF28',n:'',bn:'Multi Bank F',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:872,bl:'MF29',n:'',bn:'Multi Bank F',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:873,bl:'MF30',n:'',bn:'Multi Bank F',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:874,bl:'MF31',n:'',bn:'Multi Bank F',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:875,bl:'MF32',n:'',bn:'Multi Bank F',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:876,bl:'MF33',n:'',bn:'Multi Bank F',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:877,bl:'MF34',n:'',bn:'Multi Bank F',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:878,bl:'MF35',n:'',bn:'Multi Bank F',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:879,bl:'MF36',n:'',bn:'Multi Bank F',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:880,bl:'MF37',n:'',bn:'Multi Bank F',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:881,bl:'MF38',n:'',bn:'Multi Bank F',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:882,bl:'MF39',n:'',bn:'Multi Bank F',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:883,bl:'MF40',n:'',bn:'Multi Bank F',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:884,bl:'MF41',n:'',bn:'Multi Bank F',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:885,bl:'MF42',n:'',bn:'Multi Bank F',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:886,bl:'MF43',n:'',bn:'Multi Bank F',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:887,bl:'MF44',n:'',bn:'Multi Bank F',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:888,bl:'MF45',n:'',bn:'Multi Bank F',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:889,bl:'MF46',n:'',bn:'Multi Bank F',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:890,bl:'MF47',n:'',bn:'Multi Bank F',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:891,bl:'MF48',n:'',bn:'Multi Bank F',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:892,bl:'MF49',n:'',bn:'Multi Bank F',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:893,bl:'MF50',n:'',bn:'Multi Bank F',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:894,bl:'MF51',n:'',bn:'Multi Bank F',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:895,bl:'MF52',n:'',bn:'Multi Bank F',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:896,bl:'MF53',n:'',bn:'Multi Bank F',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:897,bl:'MF54',n:'',bn:'Multi Bank F',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:898,bl:'MF55',n:'',bn:'Multi Bank F',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:899,bl:'MF56',n:'',bn:'Multi Bank F',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:900,bl:'MF57',n:'',bn:'Multi Bank F',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:901,bl:'MF58',n:'',bn:'Multi Bank F',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:902,bl:'MF59',n:'',bn:'Multi Bank F',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:903,bl:'MF60',n:'',bn:'Multi Bank F',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:904,bl:'MF61',n:'',bn:'Multi Bank F',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:905,bl:'MF62',n:'',bn:'Multi Bank F',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:906,bl:'MF63',n:'',bn:'Multi Bank F',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''},
+{id:907,bl:'MF64',n:'',bn:'Multi Bank F',bnum:0,fn:'Multi',cls:'Multi/Combi',nt:''}
+];
+// ════════════════════════════════════════════════════════
+// APP STATE
+// ════════════════════════════════════════════════════════
+const LS = 'k5kw_';
+const lsave = (k,v) => { try{ localStorage.setItem(LS+k, JSON.stringify(v)); }catch(e){} };
+const lload = (k,d) => { try{ const v=localStorage.getItem(LS+k); return v!==null?JSON.parse(v):d; }catch(e){ return d; } };
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
+let allSounds = [];
+let filteredData = [];
+let rendered = 0;
+const PAGE = 40;
+
+let fs = { fn:'ALL', bk:'ALL', cl:'ALL' };
+let searchQ = '';
+let showFavsOnly = false;
+let activeTagFilter = null;
+let sbBankVal = 'ALL';
+
+let favs         = lload('favs', []);
+let patchOverrides = lload('overrides', {});
+let customPatches  = lload('custom', []);
+let editingId = null;
+let prefs = lload('prefs', {block:true, badge:true, empty:false, scale:1});
+let compactOn = lload('compact', false);
+let lang = lload('lang', 'en');
+
+// MIDI state
+let midiAccess = null, midiIn = null, midiOut = null;
+let midiListening = false, midiAborted = false;
+let midiDumpBuffer = []; // accumulated received patches [{block,name,bankId,rawData}]
+let midiSysexBuffer = []; // raw bytes accumulator for current incoming message
+
+// ════════════════════════════════════════════════════════
+// i18n
+// ════════════════════════════════════════════════════════
+const STRINGS = {
+  en: { patches:'PATCHES', no_results:'No patches found', no_results_sub:'Try different filters or search',
+        no_custom:'No custom patches', saved:'✓ Saved', fav_add:'★ Added', fav_rm:'Removed', reset:'↺ Filters reset',
+        data_reset:'✓ Data reset', look_reset:'↺ Appearance reset', patch_added:'✓ Patch added',
+        exported:'✓ Exported', name_req:'Name required', all_banks:'All patches' },
+  es: { patches:'PATCHES', no_results:'Sin resultados', no_results_sub:'Prueba otros filtros',
+        no_custom:'Sin patches personalizados', saved:'✓ Guardado', fav_add:'★ Añadido', fav_rm:'Eliminado',
+        reset:'↺ Filtros reset', data_reset:'✓ Datos borrados', look_reset:'↺ Apariencia reset',
+        patch_added:'✓ Patch añadido', exported:'✓ Exportado', name_req:'Nombre requerido', all_banks:'Todos' }
+};
+const tr = k => (STRINGS[lang]||STRINGS.en)[k] || k;
+
+function setLang(v){ lang=v; lsave('lang',v); }
+
+// ════════════════════════════════════════════════════════
+// DATA BUILD
+// ════════════════════════════════════════════════════════
+function buildAllSounds(){
+  const base = RAW_K5000W.map(r => {
+    const ov = patchOverrides[r.id] || {};
+    const isEmpty = !r.n || r.n==='nan' || r.n==='undefined';
+    return {
+      id: r.id,
+      bl: r.bl,
+      n: ov.n || (isEmpty ? '—' : r.n),
+      bn: r.bn,
+      bnum: r.bnum,
+      fn: ov.fn || r.fn,
+      cls: r.cls,
+      nt: ov.notes || r.nt,
+      tags: ov.tags || [],
+      empty: isEmpty,
+      custom: false,
+      syx: r.syx || null  // SysEx data from MIDI dump
+    };
+  });
+  const customs = customPatches.map((p,i) => ({
+    id: 'c'+i, bl: p.bl||'—', n: p.n, bn: p.bn||'Custom',
+    bnum: 99, fn: p.fn||'', cls: 'Custom', nt: p.notes||'',
+    tags: p.tags||[], empty: false, custom: true, syx: null
+  }));
+  allSounds = [...base, ...customs];
+}
+
+// ════════════════════════════════════════════════════════
+// FILTERS
+// ════════════════════════════════════════════════════════
+function applyFilters(){
+  const q = searchQ.toLowerCase();
+  filteredData = allSounds.filter(s => {
+    if(s.empty && !prefs.empty) return false;
+    if(showFavsOnly && !favs.includes(String(s.id))) return false;
+    if(activeTagFilter && !(s.tags||[]).includes(activeTagFilter)) return false;
+    if(sbBankVal !== 'ALL' && s.bn !== sbBankVal) return false;
+    if(fs.fn !== 'ALL' && s.fn !== fs.fn) return false;
+    if(fs.bk !== 'ALL' && s.bn !== fs.bk) return false;
+    if(fs.cl !== 'ALL'){
+      const clsLow = (s.cls||'').toLowerCase();
+      const target = fs.cl.toLowerCase();
+      if(!clsLow.includes(target)) return false;
+    }
+    if(q && !s.n.toLowerCase().includes(q) && !s.bl.toLowerCase().includes(q) && !(s.nt||'').toLowerCase().includes(q)) return false;
+    return true;
+  });
+  rendered = 0;
+  $('soundList').innerHTML = '';
+  loadMore();
+  updateLCD();
+  refreshTagBar();
+}
+
+function fchip(el){
+  const g = el.dataset.g, v = el.dataset.v;
+  document.querySelectorAll(`.chip[data-g="${g}"]`).forEach(c=>c.classList.remove('on'));
+  el.classList.add('on');
+  fs[g] = v;
+  applyFilters();
+}
+
+function onSearch(v){ searchQ = v; applyFilters(); }
+
+function toggleFavFilter(){
+  showFavsOnly = !showFavsOnly;
+  $('fc-fav').classList.toggle('on', showFavsOnly);
+  $('fc-fav-tool').classList.toggle('on', showFavsOnly);
+  applyFilters();
+}
+
+function resetAllFilters(){
+  searchQ=''; $('searchInput').value='';
+  fs={fn:'ALL',bk:'ALL',cl:'ALL'};
+  sbBankVal='ALL'; showFavsOnly=false; activeTagFilter=null;
+  ['fn','bk','cl'].forEach(g=>{
+    document.querySelectorAll(`.chip[data-g="${g}"]`).forEach(c=>c.classList.remove('on'));
+    const a=document.querySelector(`.chip[data-g="${g}"][data-v="ALL"]`); if(a) a.classList.add('on');
+  });
+  document.querySelectorAll('.sb-item').forEach(i=>i.classList.remove('on'));
+  document.querySelector('.sb-item[onclick*="sbAll"]')?.classList.add('on');
+  $('fc-fav').classList.remove('on');
+  $('fc-fav-tool').classList.remove('on');
+  applyFilters(); toast(tr('reset'));
+}
+
+// ════════════════════════════════════════════════════════
+// RENDER
+// ════════════════════════════════════════════════════════
+function loadMore(){
+  const slice = filteredData.slice(rendered, rendered+PAGE);
+  if(!slice.length && rendered===0){
+    $('soundList').innerHTML = `<div class="empty-state"><div class="empty-ico">🔍</div><div class="empty-title">${tr('no_results')}</div><div class="empty-sub">${tr('no_results_sub')}</div></div>`;
+    $('loadMore').style.display='none';
+    return;
+  }
+  slice.forEach((s,i) => {
+    const idx = rendered + i;
+    const isFav = favs.includes(String(s.id));
+    const showBlock = prefs.block;
+    const showBadge = prefs.badge;
+    const el = document.createElement('div');
+    el.className = 'sound-item' + (s.empty?' empty-patch':'');
+    el.id = 'si'+idx;
+    el.innerHTML = `
+      <div class="si-top">
+        <div class="si-left">
+          ${showBadge?`<div class="si-synth"><span class="si-badge">K5000W</span> ${esc(s.bn)}</div>`:''}
+          <div class="si-name">${esc(s.n)}</div>
+          <div class="si-meta">
+            ${showBlock?`<span class="si-block">${esc(s.bl)}</span>`:''}
+            ${s.fn?`<span class="si-fn">${esc(s.fn)}</span>`:''}
+            ${s.cls?`<span class="si-cls">${esc(s.cls)}</span>`:''}
+          </div>
+        </div>
+        <div class="si-right">
+          <button class="si-fav${isFav?' on':''}" onclick="toggleFav(event,${s.id})">${isFav?'★':'☆'}</button>
+          <button class="si-expand" onclick="toggleExpand(event,${idx})">▸ more</button>
+        </div>
+      </div>
+      <div class="si-details">
+        <div class="si-detail-row"><span class="si-dk">Bank</span><span class="si-dv">${esc(s.bn)}</span></div>
+        <div class="si-detail-row"><span class="si-dk">Block</span><span class="si-dv">${esc(s.bl)}</span></div>
+        <div class="si-detail-row"><span class="si-dk">Class</span><span class="si-dv">${esc(s.cls||'—')}</span></div>
+        ${s.nt?`<div class="si-detail-row"><span class="si-dk">Notes</span><span class="si-dv si-notes-text">${esc(s.nt)}</span></div>`:''}
+        ${(s.tags||[]).length?`<div class="si-tags">${s.tags.map(t=>`<span class="si-tag" onclick="setTagFilter('${esc(t)}')">${esc(t)}</span>`).join('')}</div>`:''}
+        <div class="si-actions">
+          <button class="si-btn acc" onclick="openEdit(${s.id},event)">✎ Edit</button>
+          <button class="si-btn" onclick="toggleQuickNote(event,${idx})">✍ Note</button>
+          ${s.syx?`<button class="si-btn" onclick="midiSendSyx('${s.id}')">↑ MIDI Send</button>`:''}
+        </div>
+        <div class="quick-note-wrap">
+          <textarea class="quick-note-input" id="qn${idx}" rows="2" placeholder="Quick note…">${esc(s.nt||'')}</textarea>
+          <button class="quick-note-save" onclick="saveQuickNote(${s.id},${idx})">✓ Save note</button>
+        </div>
+      </div>`;
+    $('soundList').appendChild(el);
+  });
+  rendered += slice.length;
+  $('loadMore').style.display = (rendered < filteredData.length) ? 'block' : 'none';
+}
+
+function toggleExpand(e, idx){
+  e.stopPropagation();
+  const el = $('si'+idx); if(!el) return;
+  el.classList.toggle('open');
+  const btn = el.querySelector('.si-expand');
+  if(btn) btn.textContent = el.classList.contains('open') ? '▾ close' : '▸ more';
+}
+
+function toggleQuickNote(e, idx){
+  e.stopPropagation();
+  const el = $('si'+idx); if(!el) return;
+  el.classList.add('open');
+  el.classList.toggle('note-open');
+  const ta = $('qn'+idx);
+  if(ta && el.classList.contains('note-open')) ta.focus();
+}
+
+function saveQuickNote(sid, idx){
+  const ta = $('qn'+idx); if(!ta) return;
+  const v = ta.value.trim();
+  patchOverrides[sid] = Object.assign(patchOverrides[sid]||{}, {notes:v});
+  lsave('overrides', patchOverrides);
+  buildAllSounds(); applyFilters(); toast(tr('saved'));
+}
+
+function toggleFav(e, sid){
+  e.stopPropagation();
+  const key = String(sid);
+  if(favs.includes(key)) favs=favs.filter(f=>f!==key), toast(tr('fav_rm'));
+  else favs.push(key), toast(tr('fav_add'));
+  lsave('favs', favs);
+  updateFavBar(); updateLCD();
+  // Update star in DOM
+  document.querySelectorAll('.si-fav').forEach(btn => {
+    if(btn.getAttribute('onclick')?.includes(`,${sid})`)){
+      btn.classList.toggle('on', favs.includes(key));
+      btn.textContent = favs.includes(key) ? '★' : '☆';
+    }
+  });
+}
+
+function setTagFilter(tag){
+  activeTagFilter = activeTagFilter===tag ? null : tag;
+  document.querySelectorAll('#tagChips .fav-chip').forEach(c=>{
+    c.classList.toggle('on', c.dataset.tag===activeTagFilter);
+  });
+  applyFilters();
+}
+
+// ════════════════════════════════════════════════════════
+// FAV BAR & TAG BAR
+// ════════════════════════════════════════════════════════
+function updateFavBar(){
+  const ct = $('sb-fav-ct'); if(ct) ct.textContent = favs.length;
+  // collect all tags
+  const tagSet = new Set();
+  allSounds.forEach(s=>(s.tags||[]).forEach(t=>tagSet.add(t)));
+  const tc = $('tagChips'); if(!tc) return;
+  if(tagSet.size){
+    tc.innerHTML = [...tagSet].map(t=>
+      `<span class="fav-chip tag-chip${activeTagFilter===t?' on':''}" data-tag="${esc(t)}" onclick="setTagFilter('${esc(t)}')">${esc(t)}</span>`
+    ).join('');
+    $('favBar').classList.add('visible');
+  } else {
+    $('favBar').classList.toggle('visible', showFavsOnly || favs.length>0);
+  }
+}
+
+function refreshTagBar(){
+  const bar = $('atagBar'); if(!bar) return;
+  const parts = [];
+  if(showFavsOnly) parts.push({l:'★ Favs', a:"toggleFavFilter()"});
+  if(activeTagFilter) parts.push({l:'tag:'+activeTagFilter, a:"setTagFilter('"+activeTagFilter+"')"});
+  if(sbBankVal!=='ALL') parts.push({l:sbBankVal, a:"sbAll(document.querySelector('.sb-item'))"});
+  if(fs.fn!=='ALL') parts.push({l:'fn:'+fs.fn, a:"resetChip('fn')"});
+  if(fs.bk!=='ALL') parts.push({l:'bank:'+fs.bk, a:"resetChip('bk')"});
+  if(fs.cl!=='ALL') parts.push({l:'cls:'+fs.cl, a:"resetChip('cl')"});
+  if(searchQ) parts.push({l:'🔍 '+searchQ, a:"clearSearch()"});
+  bar.classList.toggle('on', parts.length>0);
+  bar.innerHTML = parts.map(p=>`<span class="atag">${esc(p.l)}<span class="atag-x" onclick="${p.a}">✕</span></span>`).join('');
+}
+
+function resetChip(g){ fs[g]='ALL'; document.querySelectorAll(`.chip[data-g="${g}"]`).forEach(c=>c.classList.remove('on')); document.querySelector(`.chip[data-g="${g}"][data-v="ALL"]`)?.classList.add('on'); applyFilters(); }
+function clearSearch(){ $('searchInput').value=''; searchQ=''; applyFilters(); }
+
+// ════════════════════════════════════════════════════════
+// SIDEBAR & DRAWER
+// ════════════════════════════════════════════════════════
+function buildSidebar(){
+  const banks = [...new Set(RAW_K5000W.map(r=>r.bn))];
+  const bl = $('sbBankList'); if(!bl) return;
+  bl.innerHTML = banks.map(b => {
+    const ct = RAW_K5000W.filter(r=>r.bn===b).length;
+    return `<div class="sb-item" onclick="sbBank(this,'${esc(b)}')">${esc(b)} <span class="sb-item-ct">${ct}</span></div>`;
+  }).join('');
+  // drawer
+  const db = $('drawerBody'); if(!db) return;
+  db.innerHTML = `<div class="ds on" id="ds-k5"><div class="ds-head" onclick="this.parentElement.classList.toggle('on')">
+    <div class="ds-name"><div class="ds-icon">🎹</div>Kawai K5000W</div>
+    <div style="display:flex;align-items:center;gap:8px;"><span class="ds-count">${RAW_K5000W.length}</span><span class="chev">▶</span></div>
+  </div>
+  <div class="ds-body">
+    ${banks.map(b=>{
+      const ct = RAW_K5000W.filter(r=>r.bn===b).length;
+      return `<div class="dleaf" onclick="sbBank(null,'${esc(b)}');closeDrawer()">
+        <div class="dleaf-name"><div class="dleaf-dot"></div>${esc(b)}</div>
+        <span class="dleaf-count">${ct}</span>
+      </div>`;
+    }).join('')}
+  </div></div>`;
+}
+
+function sbAll(el){
+  sbBankVal='ALL';
+  document.querySelectorAll('.sb-item').forEach(i=>i.classList.remove('on'));
+  el?.classList.add('on');
+  showFavsOnly=false; $('fc-fav').classList.remove('on'); $('fc-fav-tool').classList.remove('on');
+  applyFilters();
+}
+function sbFav(el){
+  document.querySelectorAll('.sb-item').forEach(i=>i.classList.remove('on'));
+  el?.classList.add('on');
+  sbBankVal='ALL'; showFavsOnly=true;
+  $('fc-fav').classList.add('on'); $('fc-fav-tool').classList.add('on');
+  applyFilters();
+}
+function sbBank(el, bank){
+  sbBankVal = bank;
+  document.querySelectorAll('.sb-item').forEach(i=>i.classList.remove('on'));
+  el?.classList.add('on');
+  // sync bank chip
+  document.querySelectorAll('.chip[data-g="bk"]').forEach(c=>c.classList.remove('on'));
+  const bkChip = document.querySelector(`.chip[data-g="bk"][data-v="${bank}"]`);
+  if(bkChip) { bkChip.classList.add('on'); fs.bk=bank; }
+  else fs.bk='ALL';
+  applyFilters();
+}
+
+// ════════════════════════════════════════════════════════
+// LCD & STATUS
+// ════════════════════════════════════════════════════════
+function updateLCD(){
+  const lcd=$('lcdTxt'), pct=$('lcdPct'); if(!lcd) return;
+  const n=filteredData.length, total=allSounds.length;
+  if(n===total){ lcd.textContent=n+' '+tr('patches'); if(pct) pct.textContent=''; }
+  else{ lcd.textContent=n+' / '+total; if(pct) pct.textContent=Math.round(n/total*100)+'%'; }
+}
+
+// ════════════════════════════════════════════════════════
+// DRAWER / SETTINGS
+// ════════════════════════════════════════════════════════
+function openDrawer(){ $('drawer').classList.add('on'); $('overlay').classList.add('on'); }
+function closeDrawer(){ $('drawer').classList.remove('on'); $('overlay').classList.remove('on'); }
+function openSettings(){ $('settings').classList.add('on'); $('overlay').classList.add('on'); }
+function closeSettings(){ $('settings').classList.remove('on'); $('overlay').classList.remove('on'); }
+function closeAll(){ closeDrawer(); closeSettings(); $('overlay').classList.remove('on'); }
+function sTab(el, pid){
+  document.querySelectorAll('.s-tab').forEach(t=>t.classList.remove('on'));
+  document.querySelectorAll('.spanel').forEach(p=>p.classList.remove('on'));
+  el.classList.add('on'); $(pid).classList.add('on');
+}
+
+// ════════════════════════════════════════════════════════
+// EDIT MODAL
+// ════════════════════════════════════════════════════════
+const FN_OPTS = ['Lead','Pad','Bass','Bell','Pluck','Strings','Brass','Choir','Piano','Perc','Guitar','FX','Drums','Multi'];
+
+function buildChipGroup(container, opts, current){
+  container.innerHTML = opts.map(v =>
+    `<span class="echip${v===current?' on':''}" data-v="${esc(v)}" onclick="echipPick(this)">${esc(v)}</span>`
+  ).join('');
+}
+function echipPick(el){ el.closest('.chip-group').querySelectorAll('.echip').forEach(c=>c.classList.remove('on')); el.classList.add('on'); }
+function getEditChip(){ const el=document.querySelector('#edit-fn-group .echip.on'); return el?el.dataset.v:null; }
+
+function openEdit(pid, e){
+  if(e) e.stopPropagation();
+  const d = allSounds.find(s=>String(s.id)===String(pid)); if(!d) return;
+  editingId = pid;
+  $('editModalTitle').textContent = 'K5000W · Edit Patch';
+  $('edit-meta').textContent = `${d.bn}  ·  ${d.bl}  ·  ${d.cls}`;
+  $('edit-name').value = d.n||'';
+  buildChipGroup($('edit-fn-group'), FN_OPTS, d.fn);
+  $('edit-tags').value = (d.tags||[]).join(', ');
+  $('edit-notes').value = d.nt||'';
+  const isFav = favs.includes(String(pid));
+  $('editModal').querySelector('.modal-footer .sbtn').textContent = isFav ? '★ Remove fav' : '☆ Favourite';
+  $('editModal').classList.add('on');
+}
+function closeEdit(){ $('editModal').classList.remove('on'); editingId=null; }
+
+function saveEdit(){
+  if(editingId===null) return;
+  const ov = { n:$('edit-name').value.trim(), fn:getEditChip(),
+    tags:$('edit-tags').value.split(',').map(t=>t.trim()).filter(Boolean),
+    notes:$('edit-notes').value.trim() };
+  if(String(editingId).startsWith('c')){
+    const ci=parseInt(String(editingId).slice(1));
+    if(customPatches[ci]) Object.assign(customPatches[ci], ov);
+    lsave('custom', customPatches);
+  } else {
+    patchOverrides[editingId] = Object.assign(patchOverrides[editingId]||{}, ov);
+    lsave('overrides', patchOverrides);
+  }
+  buildAllSounds(); updateFavBar(); applyFilters(); closeEdit(); toast(tr('saved'));
+}
+
+function toggleFavEdit(){
+  if(editingId===null) return;
+  const key=String(editingId);
+  if(favs.includes(key)) favs=favs.filter(f=>f!==key); else favs.push(key);
+  lsave('favs', favs);
+  $('editModal').querySelector('.modal-footer .sbtn').textContent = favs.includes(key)?'★ Remove fav':'☆ Favourite';
+  updateFavBar(); updateLCD();
+}
+
+// ════════════════════════════════════════════════════════
+// CUSTOM PATCHES
+// ════════════════════════════════════════════════════════
+function addCustomPatch(){
+  const name=$('new-patch-name').value.trim(); if(!name){ toast(tr('name_req')); return; }
+  customPatches.push({ id:'c'+Date.now(), n:name, bn:$('new-patch-bank').value||'Custom',
+    bl:$('new-patch-block').value||'—', fn:$('new-patch-fn').value, tags:[], notes:'' });
+  lsave('custom', customPatches);
+  buildAllSounds(); renderCustomList(); applyFilters();
+  $('new-patch-name').value=''; $('new-patch-bank').value=''; $('new-patch-block').value='';
+  toast(tr('patch_added'));
+}
+function removeCustom(i){ customPatches.splice(i,1); lsave('custom',customPatches); buildAllSounds(); renderCustomList(); applyFilters(); }
+function renderCustomList(){
+  const el=$('custom-patch-list'); if(!el) return;
+  if(!customPatches.length){ el.innerHTML=`<div style="font-family:Space Mono,monospace;font-size:9px;color:var(--text3)">${tr('no_custom')}</div>`; return; }
+  el.innerHTML=customPatches.map((p,i)=>`<div class="sitem"><span class="sitem-name">${esc(p.n)}</span><span class="ibtn d" onclick="removeCustom(${i})">✕</span></div>`).join('');
+}
+function clearCustom(){ if(!confirm('Clear all custom patches?')) return; customPatches=[]; lsave('custom',[]); buildAllSounds(); renderCustomList(); applyFilters(); }
+function exportCustomJSON(){
+  const blob=new Blob([JSON.stringify({synth:'Kawai_K5000W',patches:customPatches},null,2)],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='k5000w_custom_patches.json'; a.click();
+  toast(tr('exported'));
+}
+
+// ════════════════════════════════════════════════════════
+// IMPORT
+// ════════════════════════════════════════════════════════
+function handleImport(input){
+  const file = input.files[0]; if(!file) return;
+  const ext = file.name.split('.').pop().toLowerCase();
+  if(ext==='json'){
+    const r=new FileReader(); r.onload=e=>{ try{ importJSON(JSON.parse(e.target.result)); }catch(err){ alert('JSON error: '+err); } }; r.readAsText(file);
+  } else if(ext==='csv'){
+    const r=new FileReader(); r.onload=e=>importCSV(e.target.result); r.readAsText(file);
+  } else {
+    alert('For XLSX import, use a CSV export of your spreadsheet.');
+  }
+}
+function importJSON(data){
+  const arr = Array.isArray(data) ? data : (data.patches||[]);
+  let added=0;
+  arr.forEach(p => {
+    const name = p.Patch_Name||p.Name||p.name||p.n; if(!name) return;
+    customPatches.push({ id:'c'+Date.now()+added, n:name, bn:p.Bank_Name||p.bank||p.bn||'Imported',
+      bl:p.Block||p.block||p.bl||'—', fn:p.Musical_Role||p.fn||'', tags:[], notes:p.Notes||p.notes||'' });
+    added++;
+  });
+  lsave('custom', customPatches); buildAllSounds(); renderCustomList(); applyFilters();
+  $('importPreview').innerHTML=`<div style="font-family:Space Mono,monospace;font-size:9px;color:var(--acc-l);">✓ Imported ${added} patches</div>`;
+}
+function importCSV(text){
+  const lines=text.split('\n'); const headers=lines[0].split(',').map(h=>h.trim().replace(/"/g,''));
+  const idx=(h)=>headers.findIndex(x=>x.toLowerCase()===h.toLowerCase());
+  const ni=idx('Patch_Name')<0?idx('Name'):idx('Patch_Name');
+  let added=0;
+  lines.slice(1).forEach(line=>{
+    if(!line.trim()) return;
+    const cols=line.split(',').map(c=>c.trim().replace(/"/g,''));
+    const name=cols[ni]; if(!name) return;
+    customPatches.push({ id:'c'+Date.now()+added, n:name, bn:cols[idx('Bank_Name')]||'Imported',
+      bl:cols[idx('Block')]||'—', fn:cols[idx('Musical_Role')]||'', tags:[], notes:'' });
+    added++;
+  });
+  lsave('custom', customPatches); buildAllSounds(); renderCustomList(); applyFilters();
+  $('importPreview').innerHTML=`<div style="font-family:Space Mono,monospace;font-size:9px;color:var(--acc-l);">✓ Imported ${added} patches</div>`;
+}
+
+// ════════════════════════════════════════════════════════
+// RANDOM
+// ════════════════════════════════════════════════════════
+function randomPatch(){
+  if(!filteredData.length) return;
+  const s = filteredData[Math.floor(Math.random()*filteredData.length)];
+  const idx = filteredData.indexOf(s);
+  while(rendered<=idx) loadMore();
+  const el=$('si'+idx); if(!el) return;
+  el.scrollIntoView({behavior:'smooth',block:'center'});
+  setTimeout(()=>{ el.classList.add('open'); const btn=el.querySelector('.si-expand'); if(btn) btn.textContent='▾ close'; el.style.background='rgba(90,143,196,.1)'; setTimeout(()=>el.style.background='',700); },300);
+}
+
+// ════════════════════════════════════════════════════════
+// STATS
+// ════════════════════════════════════════════════════════
+function openStats(){
+  const total=allSounds.length, fav=favs.length, custom=customPatches.length;
+  const banks=[...new Set(allSounds.map(s=>s.bn))];
+  const bankRows=banks.map(b=>{
+    const ct=allSounds.filter(s=>s.bn===b).length, pct=Math.round(ct/total*100);
+    return `<div class="stats-bar-row"><div class="stats-bar-label"><span>${esc(b)}</span><span>${ct}</span></div>
+      <div class="stats-bar-track"><div class="stats-bar-fill" style="width:${pct}%"></div></div></div>`;
+  }).join('');
+  const fnCounts={}; allSounds.forEach(s=>{ if(s.fn) fnCounts[s.fn]=(fnCounts[s.fn]||0)+1; });
+  const topFn=Object.entries(fnCounts).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  const fnRows=topFn.map(([fn,ct])=>{
+    const pct=Math.round(ct/total*100);
+    return `<div class="stats-bar-row"><div class="stats-bar-label"><span>${esc(fn)}</span><span>${ct}</span></div>
+      <div class="stats-bar-track"><div class="stats-bar-fill" style="width:${pct}%;background:var(--acc-o)"></div></div></div>`;
+  }).join('');
+  $('statsBody').innerHTML=`
+    <div style="padding:14px">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px;">
+        <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:5px;padding:12px;text-align:center;">
+          <span style="font-family:Space Mono,monospace;font-size:20px;font-weight:700;color:var(--acc-l);display:block">${total}</span>
+          <span style="font-family:Space Mono,monospace;font-size:7px;color:var(--text3);text-transform:uppercase;letter-spacing:1px">Total</span>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:5px;padding:12px;text-align:center;">
+          <span style="font-family:Space Mono,monospace;font-size:20px;font-weight:700;color:#c8b860;display:block">${fav}</span>
+          <span style="font-family:Space Mono,monospace;font-size:7px;color:var(--text3);text-transform:uppercase;letter-spacing:1px">Favs</span>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:5px;padding:12px;text-align:center;">
+          <span style="font-family:Space Mono,monospace;font-size:20px;font-weight:700;color:var(--acc-o);display:block">${custom}</span>
+          <span style="font-family:Space Mono,monospace;font-size:7px;color:var(--text3);text-transform:uppercase;letter-spacing:1px">Custom</span>
+        </div>
+      </div>
+      <div style="font-family:Space Mono,monospace;font-size:8px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px;">Banks</div>
+      ${bankRows}
+      <div style="font-family:Space Mono,monospace;font-size:8px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:1.5px;margin:14px 0 8px;">Top Functions</div>
+      ${fnRows}
+    </div>`;
+  $('statsModal').classList.add('on');
+}
+
+// ════════════════════════════════════════════════════════
+// APPEARANCE
+// ════════════════════════════════════════════════════════
+function hslToHex(h,s,l){ s/=100;l/=100; const a=s*Math.min(l,1-l); const f=n=>{const k=(n+h/30)%12;const c=l-a*Math.max(Math.min(k-3,9-k,1),-1);return Math.round(255*c).toString(16).padStart(2,'0')}; return '#'+f(0)+f(8)+f(4); }
+function hexToHsl(hex){ let r=parseInt(hex.slice(1,3),16)/255,g=parseInt(hex.slice(3,5),16)/255,b=parseInt(hex.slice(5,7),16)/255; const max=Math.max(r,g,b),min=Math.min(r,g,b);let h,s,l=(max+min)/2; if(max===min){h=s=0;}else{const d=max-min;s=l>.5?d/(2-max-min):d/(max+min);switch(max){case r:h=(g-b)/d+(g<b?6:0);break;case g:h=(b-r)/d+2;break;case b:h=(r-g)/d+4;break;}h/=6;} return[Math.round(h*360),Math.round(s*100),Math.round(l*100)]; }
+
+function applyAcc(hex){
+  const [h,s,l]=hexToHsl(hex);
+  document.documentElement.style.setProperty('--acc', hex);
+  document.documentElement.style.setProperty('--acc-l', hslToHex(h,s,Math.min(l+14,85)));
+  document.documentElement.style.setProperty('--acc-d', hslToHex(h,s,Math.max(l-10,20)));
+  lsave('acc', hex);
+}
+function applyAccHex(v){ if(/^#[0-9a-fA-F]{6}$/.test(v)) applyAcc(v); }
+function quickPreset(el){ document.querySelectorAll('.cswatch').forEach(s=>s.classList.remove('on')); el.classList.add('on'); applyAcc(el.dataset.c); $('customColor').value=el.dataset.c; }
+
+function setUIScale(v){
+  v=parseFloat(v); const pct=Math.round(v*100);
+  if(typeof document.documentElement.style.zoom!=='undefined') document.documentElement.style.zoom=v;
+  else{ document.body.style.transform='scale('+v+')'; document.body.style.transformOrigin='top left'; document.body.style.width=(100/v)+'%'; document.body.style.height=(100/v)+'dvh'; }
+  const lbl=$('scaleLabel'); if(lbl) lbl.textContent=pct+'%';
+  prefs.scale=v; lsave('prefs',prefs);
+}
+
+function savePrefs(){
+  prefs.block=$('tog-block').checked; prefs.badge=$('tog-badge').checked; prefs.empty=$('tog-empty').checked;
+  lsave('prefs',prefs); buildAllSounds(); applyFilters();
+}
+function toggleCompact(){ compactOn=!compactOn; lsave('compact',compactOn); document.body.classList.toggle('compact',compactOn); $('viewBtn').classList.toggle('compact-on',compactOn); }
+
+function resetAllData(){
+  if(!confirm('Clear all favourites, notes, tags and custom patches?')) return;
+  ['favs','overrides','custom'].forEach(k=>localStorage.removeItem(LS+k));
+  favs={}; patchOverrides={}; customPatches=[];
+  buildAllSounds(); renderCustomList(); updateFavBar(); applyFilters(); toast(tr('data_reset'));
+}
+function resetAppearance(){
+  if(!confirm('Reset appearance to defaults?')) return;
+  localStorage.removeItem(LS+'acc'); localStorage.removeItem(LS+'prefs');
+  prefs={block:true,badge:true,empty:false,scale:1};
+  applyAcc('#5a8fc4'); setUIScale(1);
+  $('tog-block').checked=true; $('tog-badge').checked=true; $('tog-empty').checked=false;
+  toast(tr('look_reset'));
+}
+
+// ════════════════════════════════════════════════════════
+// TOAST
+// ════════════════════════════════════════════════════════
+let toastT;
+function toast(msg){ const t=$('toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove('show'),2200); }
+
+// ════════════════════════════════════════════════════════
+// ── KAWAI K5000W SysEx DRIVER ──
+// ════════════════════════════════════════════════════════
+// Protocol:
+//   Manufacturer: 0x40 (Kawai)
+//   Machine ID:   0x0A (K5000 series)
+//   Channel:      0x00 = ch1 … 0x0F = ch16
+//
+//   Identity Request:  F0 40 [ch] 60 F7
+//   Identity Ack:      F0 40 [ch] 61 00 0A [model] F7
+//
+//   Single dump (receive/send):
+//     F0 40 [ch] 20 00 0A [bank] 00 [patch-1] [data...] F7
+//   Block dump (receive):
+//     F0 40 [ch] 21 00 0A [bank] 00 [data...] F7
+//   Single request (send):
+//     F0 40 [ch] 00 00 0A [bank] 00 [patch-1] F7
+//
+//   Banks: 0x00=A, 0x01=B, 0x02=D, 0x03=E, 0x04=F
+//   Patch name: bytes 0–7 of data block (ASCII, 8 chars)
+// ════════════════════════════════════════════════════════
+
+const K5000W_DRV = {
+  MFR: 0x40,
+  MACHINE: 0x0A,
+  BANKS: { A:0x00, B:0x01, D:0x02, E:0x03, F:0x04 },
+  NAME_LEN: 8,
+
+  ch() { return parseInt($('midiChSel')?.value||'0'); },
+
+  buildIdentityRequest() { return [0xF0, 0x40, this.ch(), 0x60, 0xF7]; },
+
+  isIdentityAck(d){
+    return d.length>=7 && d[0]===0xF0 && d[1]===0x40 && d[3]===0x61 && d[4]===0x00 && d[5]===0x0A;
+  },
+
+  buildSingleRequest(bankId, patchNum){
+    // Request single patch (0-based patchNum)
+    return [0xF0, 0x40, this.ch(), 0x00, 0x00, this.MACHINE, bankId, 0x00, patchNum, 0xF7];
+  },
+
+  buildBlockRequest(bankId){
+    // Request entire bank
+    return [0xF0, 0x40, this.ch(), 0x01, 0x00, this.MACHINE, bankId, 0x00, 0xF7];
+  },
+
+  parseSingle(d){
+    // F0 40 ch 20 00 0A bank sub patch-1 [data...] F7
+    if(d.length < 12) return null;
+    if(d[0]!==0xF0 || d[1]!==0x40) return null;
+    const fn = d[3];
+    if(fn!==0x20 && fn!==0x21) return null; // single or block
+    if(d[5]!==0x0A) return null;
+    const bankId = d[6];
+    const patchNum = d[8]; // 0-based
+    const data = Array.from(d).slice(9, d.length-1); // strip F7
+    const name = this.extractName(data);
+    return { bankId, patchNum, name, data, single: fn===0x20 };
+  },
+
+  extractName(data){
+    let name='';
+    for(let i=0;i<this.NAME_LEN && i<data.length;i++){
+      const c=data[i]&0x7F;
+      name += (c>=32 && c<127) ? String.fromCharCode(c) : ' ';
+    }
+    return name.trimEnd()||'(unnamed)';
+  },
+
+  bankLabel(bankId){
+    return Object.keys(this.BANKS).find(k=>this.BANKS[k]===bankId)||('0x'+bankId.toString(16));
+  },
+
+  // Build a single dump message (to send a patch to the synth edit buffer)
+  buildSingleDump(bankId, patchNum, data){
+    return [0xF0, 0x40, this.ch(), 0x20, 0x00, this.MACHINE, bankId, 0x00, patchNum, ...data, 0xF7];
+  }
+};
+
+// ════════════════════════════════════════════════════════
+// MIDI ENGINE
+// ════════════════════════════════════════════════════════
+function midiLog(msg){ const el=$('midiLog'); if(!el) return; el.textContent=msg; el.scrollTop=el.scrollHeight; }
+function midiLed(state){ const el=$('midiLed'); if(!el) return; el.className='midi-led'+(state!=='off'?' '+state:''); }
+function midiSetStatus(txt){ const el=$('midiStatusTxt'); if(el) el.textContent=txt; }
+function midiProgress(pct){ const el=$('midiProgressBar'); if(el) el.style.width=Math.min(100,pct)+'%'; }
+
+async function midiInit(){
+  if(!navigator.requestMIDIAccess){ midiSetStatus('Web MIDI not supported (use Chrome/Edge)'); midiLed('err'); return; }
+  try{
+    midiAccess = await navigator.requestMIDIAccess({sysex:true});
+    midiPopulatePorts();
+    midiSetStatus('MIDI ready — select ports');
+    midiLed('on');
+    midiAccess.onstatechange = midiPopulatePorts;
+  } catch(e){ midiSetStatus('MIDI access denied: '+e.message); midiLed('err'); }
+}
+
+function midiPopulatePorts(){
+  if(!midiAccess) return;
+  const inSel=$('midiInSel'), outSel=$('midiOutSel');
+  const inVal=inSel.value, outVal=outSel.value;
+  inSel.innerHTML='<option value="">— MIDI In —</option>';
+  outSel.innerHTML='<option value="">— MIDI Out —</option>';
+  midiAccess.inputs.forEach(p=>{ const o=document.createElement('option'); o.value=p.id; o.textContent=p.name; if(p.id===inVal) o.selected=true; inSel.appendChild(o); });
+  midiAccess.outputs.forEach(p=>{ const o=document.createElement('option'); o.value=p.id; o.textContent=p.name; if(p.id===outVal) o.selected=true; outSel.appendChild(o); });
+}
+
+function midiGetIn(){ return midiAccess?.inputs.get($('midiInSel')?.value); }
+function midiGetOut(){ return midiAccess?.outputs.get($('midiOutSel')?.value); }
+
+function midiSend(bytes){
+  const out=midiGetOut(); if(!out){ midiLog('No MIDI Out port selected.'); return false; }
+  out.send(new Uint8Array(bytes));
+  return true;
+}
+
+function midiIdentify(){
+  if(!midiSend(K5000W_DRV.buildIdentityRequest())){ toast('No MIDI Out'); return; }
+  midiLog('Sent Identity Request — waiting for response…');
+  midiLed('busy');
+  midiListenFor(d=>{
+    if(K5000W_DRV.isIdentityAck(d)){
+      const model = d[6];
+      midiSetStatus(`K5000W identified ✓ (model byte: 0x${model.toString(16)})`);
+      midiLed('on');
+      midiLog(`Identity ACK received. Machine: 0x0A, Model: 0x${model.toString(16)}`);
+      return true;
+    }
+    return false;
+  }, 3000, ()=>{ midiLed('err'); midiLog('No identity response — check connection and channel.'); });
+}
+
+function midiListenFor(predicate, timeoutMs, onTimeout){
+  const inp=midiGetIn(); if(!inp){ midiLog('No MIDI In port selected.'); return; }
+  let buf=[];
+  const handler=e=>{
+    const d=Array.from(e.data);
+    if(d[0]===0xF0) buf=d;
+    else if(buf.length) buf.push(...d);
+    if(buf.length && buf[buf.length-1]===0xF7){
+      if(predicate([...buf])){ inp.onmidimessage=null; clearTimeout(t); }
+      buf=[];
+    }
+  };
+  inp.onmidimessage=handler;
+  const t=setTimeout(()=>{ inp.onmidimessage=null; if(onTimeout) onTimeout(); }, timeoutMs);
+}
+
+let midiListenActive=false;
+function midiListenToggle(){
+  if(midiListenActive){ midiListenStop(); return; }
+  const inp=midiGetIn(); if(!inp){ toast('No MIDI In port selected'); return; }
+  midiListenActive=true;
+  midiDumpBuffer=[];
+  midiSysexBuffer=[];
+  $('midiListenBtn').textContent='◼ Stop';
+  $('midiListenBtn').classList.add('on');
+  $('midiAbortBtn').style.display='';
+  midiLed('busy');
+  midiSetStatus('Listening for K5000W dumps…');
+  midiLog('Listening — press MIDI → Bulk Dump on the K5000W…');
+  let msgCount=0;
+  inp.onmidimessage=e=>{
+    const d=Array.from(e.data);
+    if(d[0]===0xF0) midiSysexBuffer=d;
+    else if(midiSysexBuffer.length) midiSysexBuffer.push(...d);
+    if(midiSysexBuffer.length && midiSysexBuffer[midiSysexBuffer.length-1]===0xF7){
+      const parsed=K5000W_DRV.parseSingle([...midiSysexBuffer]);
+      if(parsed){
+        midiDumpBuffer.push(parsed); msgCount++;
+        midiLog(`Received: Bank ${K5000W_DRV.bankLabel(parsed.bankId)} · #${parsed.patchNum+1} · "${parsed.name}" (${parsed.data.length}b)`);
+        midiProgress(Math.min(msgCount/128*100, 99));
+        midiUpdateSendList();
+      }
+      midiSysexBuffer=[];
+    }
+  };
+}
+function midiListenStop(){
+  midiListenActive=false;
+  const inp=midiGetIn(); if(inp) inp.onmidimessage=null;
+  $('midiListenBtn').textContent='◉ Listen';
+  $('midiListenBtn').classList.remove('on');
+  $('midiAbortBtn').style.display='none';
+  midiLed('on');
+  midiProgress(100);
+  midiSetStatus(`Received ${midiDumpBuffer.length} patches`);
+  midiLog(`Done — ${midiDumpBuffer.length} patches received.`);
+  if(midiDumpBuffer.length) midiStoreDumped();
+}
+function midiAbort(){ midiListenStop(); }
+
+function midiStoreDumped(){
+  // Store SysEx data into patchOverrides for matching patches
+  let matched=0, unmatched=0;
+  midiDumpBuffer.forEach(p=>{
+    const bankName = ['Additive Bank','PCM Bank','GM Bank D (65-128)','ME-1 Bank E','ME-1 Bank F'][p.bankId]||'Unknown';
+    // Try to match by block label (e.g. "A001" for bankId=0 patchNum=0)
+    const prefix=['A','B','D','E','F'][p.bankId]||'?';
+    const blockLabel = prefix+String(p.patchNum+1).padStart(3,'0');
+    const match = allSounds.find(s=>s.bl===blockLabel);
+    if(match){
+      patchOverrides[match.id] = Object.assign(patchOverrides[match.id]||{}, {
+        syx_name: p.name,
+        syx_data: p.data,
+        syx_bank: p.bankId,
+        syx_num: p.patchNum
+      });
+      matched++;
+    } else unmatched++;
+  });
+  lsave('overrides', patchOverrides);
+  buildAllSounds(); applyFilters();
+  toast(`✓ Stored ${matched} patches`+(unmatched?` (${unmatched} unmatched)`:''));
+}
+
+async function midiDumpRequest(){
+  const bankId = parseInt($('dumpBankSel')?.value||'0');
+  const out=midiGetOut(); if(!out){ toast('No MIDI Out port'); return; }
+  midiLed('busy');
+  midiLog(`Requesting bank ${K5000W_DRV.bankLabel(bankId)}…`);
+  midiDumpBuffer=[];
+  // Start listening first
+  midiListenToggle();
+  // Then send request
+  setTimeout(()=>{
+    out.send(new Uint8Array(K5000W_DRV.buildBlockRequest(bankId)));
+    midiLog(`Bank request sent. Waiting for K5000W response…`);
+  }, 200);
+}
+
+function midiUpdateSendList(){
+  const sel=$('sendPatchSel'); if(!sel) return;
+  const current=sel.value;
+  sel.innerHTML='<option value="">— select patch with SysEx data —</option>';
+  midiDumpBuffer.forEach((p,i)=>{
+    const o=document.createElement('option');
+    o.value=i;
+    o.textContent=`${K5000W_DRV.bankLabel(p.bankId)}${String(p.patchNum+1).padStart(3,'0')} · ${p.name}`;
+    sel.appendChild(o);
+  });
+  if(current) sel.value=current;
+}
+
+function midiSendPatch(){
+  const idx=parseInt($('sendPatchSel')?.value);
+  if(isNaN(idx)){ toast('Select a patch first'); return; }
+  const p=midiDumpBuffer[idx]; if(!p){ toast('Patch not found'); return; }
+  const out=midiGetOut(); if(!out){ toast('No MIDI Out'); return; }
+  const msg=K5000W_DRV.buildSingleDump(p.bankId, p.patchNum, p.data);
+  out.send(new Uint8Array(msg));
+  midiLog(`Sent "${p.name}" to K5000W edit buffer (${msg.length}b)`);
+  toast(`↑ Sent: ${p.name}`);
+}
+
+function midiSendSyx(sid){
+  const s=allSounds.find(x=>String(x.id)===String(sid)); if(!s||!s.syx) return;
+  const ov=patchOverrides[sid]; if(!ov?.syx_data){ toast('No SysEx data for this patch'); return; }
+  const out=midiGetOut(); if(!out){ toast('No MIDI Out'); return; }
+  const msg=K5000W_DRV.buildSingleDump(ov.syx_bank, ov.syx_num, ov.syx_data);
+  out.send(new Uint8Array(msg));
+  toast(`↑ Sent: ${s.n}`);
+}
+
+function midiExportSyx(){
+  if(!midiDumpBuffer.length){ toast('No SysEx data — run a dump first'); return; }
+  const bytes=[]; midiDumpBuffer.forEach(p=>{ bytes.push(0xF0,0x40,K5000W_DRV.ch(),0x20,0x00,0x0A,p.bankId,0x00,p.patchNum,...p.data,0xF7); });
+  const blob=new Blob([new Uint8Array(bytes)],{type:'application/octet-stream'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='k5000w_dump.syx'; a.click();
+  toast('↓ Exported .syx');
+}
+function midiExportJSON(){
+  if(!midiDumpBuffer.length){ toast('No SysEx data — run a dump first'); return; }
+  const data={synth:'Kawai_K5000W',date:new Date().toISOString(),patches:midiDumpBuffer.map(p=>({bank:K5000W_DRV.bankLabel(p.bankId),patchNum:p.patchNum+1,name:p.name,dataLength:p.data.length}))};
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='k5000w_dump.json'; a.click();
+  toast('↓ Exported .json');
+}
+
+// ════════════════════════════════════════════════════════
+// LAYOUT ADJUST
+// ════════════════════════════════════════════════════════
+function adjustLayout(){
+  const H=44, fstrip=$('fstrip');
+  if(!fstrip) return;
+  const fh=fstrip.offsetHeight;
+  const atagBar=$('atagBar'), favBar=$('favBar');
+  let top=H+fh;
+  if(atagBar?.classList.contains('on')){ atagBar.style.top=top+'px'; top+=atagBar.offsetHeight; }
+  else if(atagBar) atagBar.style.top=top+'px';
+  if(favBar?.classList.contains('visible')){ favBar.style.top=top+'px'; top+=favBar.offsetHeight; }
+  else if(favBar) favBar.style.top=top+'px';
+  const main=$('mainWrap'); if(main) main.style.top=top+'px';
+  const sb=$('sidebar'); if(sb) sb.style.top=H+'px';
+}
+
+window.addEventListener('resize', adjustLayout);
+
+// ════════════════════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════════════════════
+(function init(){
+  // Apply saved prefs
+  const savedAcc = lload('acc', '#5a8fc4');
+  if(savedAcc) applyAcc(savedAcc);
+  $('tog-block').checked = prefs.block!==false;
+  $('tog-badge').checked = prefs.badge!==false;
+  $('tog-empty').checked = !!prefs.empty;
+  if(prefs.scale && prefs.scale!==1) setUIScale(prefs.scale);
+  if(compactOn){ document.body.classList.add('compact'); $('viewBtn').classList.add('compact-on'); }
+
+  buildAllSounds();
+  buildSidebar();
+  renderCustomList();
+  updateFavBar();
+  applyFilters();
+
+  // Set sb-all count
+  const ct=$('sb-all-ct'); if(ct) ct.textContent=allSounds.length;
+
+  setTimeout(adjustLayout, 50);
+})();
+</script>
+</body>
+</html>
