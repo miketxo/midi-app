@@ -4251,13 +4251,17 @@ var JD800 = (function() {
   }
 
   function buildSend(devId, data) {
-    // Send to Patch Temporary Area (00 00 00) in 3 segments of 256 bytes
-    var SEG=256, msgs=[];
-    for(var seg=0;seg<3;seg++){
-      var sd=Array.from(data.slice(seg*SEG,(seg+1)*SEG));
-      if(!sd||sd.length===0)break;
-      var sa=[0x00,seg*2,0x00,0x00]; // addr increments by 2 per 256-byte segment
-      msgs.push([0xF0,0x41,devId,MDL,0x12].concat(sa).concat(sd).concat([cs(sa,sd),0xF7]));
+    // Send to Patch Temporary Area in 2 segments matching JD-800 Patch Dump format:
+    // Seg 1: addr 00 00 00, up to 255 bytes
+    // Seg 2: addr 00 02 00, remaining bytes
+    var msgs=[];
+    var seg1=Array.from(data.slice(0,255));
+    var seg2=Array.from(data.slice(255));
+    var sa1=[0x00,0x00,0x00,0x00];
+    var sa2=[0x00,0x02,0x00,0x00];
+    msgs.push([0xF0,0x41,devId,MDL,0x12].concat(sa1).concat(seg1).concat([cs(sa1,seg1),0xF7]));
+    if(seg2.length>0){
+      msgs.push([0xF0,0x41,devId,MDL,0x12].concat(sa2).concat(seg2).concat([cs(sa2,seg2),0xF7]));
     }
     return msgs;
   }
@@ -4761,51 +4765,41 @@ function patchDumpStop(){
   midiLog('Patch dump cancelado','ml-warn');
 }
 
+// Patch Dump = 2 SysEx messages:
+// Seg 1: addr 00 00 00, 255 data bytes (contains patch name at addr[3]+data[0..10])
+// Seg 2: addr 00 02 00, 127 data bytes
+// Total: 382 bytes of patch data
 var patchDumpSegments=[], patchDumpSegCount=0;
 function patchDumpHandleMsg(data){
   if(!patchDumpActive&&patchDumpSegCount===0)return false;
-  // Once receiving segments, accept all continuation msgs even if patchDumpActive=false
   if(data.length<12||data[0]!==0xF0||data[1]!==0x41||data[3]!==0x3D||data[4]!==0x12)return false;
   var a0=data[5],a1=data[6],a2=data[7];
-  // Accept Patch Temporary Area segments: addr[0]=00, addr[1]=0,2,4 (3 segments)
   if(a0!==0x00)return false;
-  // First segment: a1=0x00, continuation: a1=0x02 or 0x04
   if(patchDumpSegCount===0&&a1!==0x00)return false;
-  if(patchDumpSegCount>0&&a1!==patchDumpSegCount*2)return false;
+  if(patchDumpSegCount===1&&a1!==0x02)return false;
   var segData=Array.from(data.slice(9,data.length-2));
   if(patchDumpSegCount===0){
-    // First segment - extract name
     var addr=[a0,a1,a2,data[8]];
     var name=JD800.fullName(JD800.extractName(addr,segData));
     var slot=$('patchDumpSlot')?$('patchDumpSlot').value:'1-1';
     patchDumpSegments=[segData];
     patchDumpSegCount=1;
-    patchDumpReceived={name:name, addr:addr, slot:slot, rawData:null};
-    // Keep listening for segments 2 and 3 - don't set patchDumpActive=false yet
-    midiLog('Seg 1/3: '+name,'ml-info');
-  } else if(patchDumpSegCount<3){
-    // Continuation segments
+    patchDumpReceived={name:name,addr:addr,slot:slot,rawData:null};
+    midiLog('Seg 1/2: '+name,'ml-info');
+  } else if(patchDumpSegCount===1){
     patchDumpSegments.push(segData);
-    patchDumpSegCount++;
-    midiLog('Seg '+patchDumpSegCount+'/3','ml-info');
-    if(patchDumpSegCount===3){
-      // All 3 segments received - combine
-      var allData=patchDumpSegments[0].concat(patchDumpSegments[1]).concat(patchDumpSegments[2]);
-      patchDumpReceived.rawData=allData;
-      patchDumpSegCount=0;
-      patchDumpSegments=[];
-      // Show preview
-      var prev=$('patchDumpPreview');
-      var nameEl=$('patchDumpName');
-      var slotEl=$('patchDumpSlotLabel');
-      if(nameEl)nameEl.textContent=patchDumpReceived.name;
-      if(slotEl)slotEl.textContent=patchDumpReceived.slot;
-      if(prev)prev.style.display='block';
-      $('patchDumpBtn').style.display='block';
-      $('patchDumpStopBtn').style.display='none';
-      patchDumpActive=false;
-      midiLog('Recibido completo: '+patchDumpReceived.name+' ('+allData.length+' bytes)','ml-ok');
-    }
+    var allData=patchDumpSegments[0].concat(patchDumpSegments[1]);
+    patchDumpReceived.rawData=allData;
+    patchDumpSegCount=0;
+    patchDumpSegments=[];
+    var prev=$('patchDumpPreview');
+    if($('patchDumpName'))$('patchDumpName').textContent=patchDumpReceived.name;
+    if($('patchDumpSlotLabel'))$('patchDumpSlotLabel').textContent=patchDumpReceived.slot;
+    if(prev)prev.style.display='block';
+    $('patchDumpBtn').style.display='block';
+    $('patchDumpStopBtn').style.display='none';
+    patchDumpActive=false;
+    midiLog('Recibido completo: '+patchDumpReceived.name+' ('+allData.length+' bytes)','ml-ok');
   }
   return true;
 }
